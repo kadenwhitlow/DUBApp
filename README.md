@@ -66,10 +66,7 @@ DUB (Drake University Betting) is a sports betting application designed for the 
 4. Push changes: `git push origin feature-branch`
 5. Open a pull request.
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## Contact
-For questions or contributions, reach out to [your contact email or GitHub profile].
+For questions or contributions, reach out to [Kaden Whitlow (kaden.whitlow@drake.edu), Nico Gonella (nico.gonella@drake.edu), Sarah Chastain (sarah.chastain@drake.edu), Christian Costanza (christian.costanza@drake.edu)
 
 
