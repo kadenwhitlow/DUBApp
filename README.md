@@ -67,6 +67,6 @@ DUB (Drake University Betting) is a sports betting application designed for the 
 5. Open a pull request.
 
 ## Contact
-For questions or contributions, reach out to [Kaden Whitlow (kaden.whitlow@drake.edu), Nico Gonella (nico.gonella@drake.edu), Sarah Chastain (sarah.chastain@drake.edu), Christian Costanza (christian.costanza@drake.edu)
+For questions or contributions, reach out to [Kaden Whitlow (kaden.whitlow@drake.edu), Nico Gonella (nico.gonella@drake.edu), Sarah Chastain (sarah.chastain@drake.edu), Christian Costanza (christian.costanza@drake.edu)]
 
 
