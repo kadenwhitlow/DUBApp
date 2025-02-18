@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="official_bets.css">
+</head>
+<body>
+
+<div class = "top-bar">
+    <div class="container" onclick="myFunction(this)">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+    </div>
+
+    <img src="https://th.bing.com/th/id/OIP.qAZ-Kx6oiboKKwG4BfKouAHaE7?rs=1&pid=ImgDetMain" alt="Logo" class = "center">
+
+    <h1>$20.00</h1>
+</div>
+
+<h1>Official Bets</h1>
+<div class="search">
+    <form action="#">
+        <input type="text" placeholder="Search Posts" name="search">
+        <button>
+            <i class="fa fa-search"></i>
+        </button>
+    </form>
+</div>
+
+<!-- add for loop before this to list all questions -->
+<div class = "box">
+    <div class = "row row-top">
+        <img src="https://th.bing.com/th/id/OIP.aqqSGkMTjp4ag_MJljD_IAHaH1?pid=ImgDet&w=474&h=501&rs=1" alt = "user">
+        <p>Will Griff be abducted?</p>
+        <div class = "progress-wrapper">
+            <div class="progress">
+                <div class="progress-bar"></div>
+            </div>
+            <p>30%</p>
+        </div>
+    </div>
+    <div class = "row row-middle">
+        <button class = "buttonn button1">Yes</button>
+        <button class = "buttonn button2">No</button>
+    </div>
+    <div class = "row row-bottom">
+        <p>45k</p>
+        <p>#dog</p>
+        <button>
+            <i class="fa fa-bookmark"></i>
+        </button>
+
+    </div>
+</div>
+
+<script>
+function myFunction(x) {
+  x.classList.toggle("change");
+}
+</script>
+
+</body>
+</html>
