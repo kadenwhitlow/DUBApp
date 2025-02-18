@@ -1,0 +1,94 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1E3A66;
+    color: white;
+    text-align: center;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #162447;
+    padding: 15px 20px;
+}
+
+.menu-button img {
+    width: 40px;
+    cursor: pointer;
+}
+
+.logo img {
+    width: 120px;
+}
+
+.user-balance {
+    font-size: 18px;
+    font-weight: bold;
+    color: #FFC107;
+}
+
+/* Content Sections */
+.content, .bets {
+    width: 90%;
+    max-width: 600px;
+    background-color: white;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px auto;
+}
+
+.events p {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+/* Bets Section */
+.bets {
+    background-color: #283C63;
+    color: white;
+}
+
+.bet {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.bet img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.bet-info {
+    flex-grow: 1;
+    text-align: center;
+    font-weight: bold;
+}
+
+.bet button {
+    background-color: #FFC107;
+    color: black;
+    border: none;
+    padding: 8px 12px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.bet button:hover {
+    background-color: #FFA000;
+}
