@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom {
+            background-color: #3f51b5;
+        }
+        .bet-card {
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="HOME PAGE">
+                <span class="material-symbols-outlined me-1"></span>
+                Menu
+              </a>            
+              <div class="ms-auto d-flex">
+                <a class="navbar-brand text-light" href="#">LOGO</a>
+            </div>
+            <div class="ms-auto d-flex">
+                <a class="nav-link text-light" href="#">User Balance</a>
+            </div>
+
+        </div>
+    </nav>
+    
+     <!-- Betting Section -->
+     <div class="container mt-4">
+        <h2 class="text-primary">My Bets</h2>
+
+        <!-- Search Bar -->
+        <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Tag Search Official/Unofficial">
+        </div>
+
+        <!-- Bets Grid -->
+        <div class="row">
+            <!-- Example Bet Card -->
+            <div class="col-md-4 mb-3">
+                <div class="bet-card bg-light p-3">
+                    <div class="text-center">
+                        <img src="" alt="Bet Image" class="img-fluid">
+                    </div>
+                    <h5 class="mt-2">Bet/Parlay</h5>
+                    <p>Betting information: odds, amount placed, etc.</p>
+                    <p><strong>Time Remaining:</strong> 2h 15m</p>
+                    <button class="btn btn-primary">More Info</button>
+                </div>
+            </div>
+            <!-- Duplicate the above div for multiple bets -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+</body>
+</html>
