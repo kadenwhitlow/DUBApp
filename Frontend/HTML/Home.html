@@ -1,145 +1,16 @@
 <!-- MAJORITY OF THIS HTML HAS BEEN GENERATED WITH CHAT GPT-->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="{{ url_for('static', filename='JS/home.js') }}"></script>
     <title>DUB - Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #1E3A66;
-            color: white;
-            text-align: center;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #ccc;
-            padding: 10px 20px;
-            position: relative;
-        }
-
-        /* Menu Button */
-        .menu-button img {
-            width: 40px;
-            height: auto;
-            cursor: pointer;
-        }
-
-        /* Logo */
-        .logo img {
-            width: 120px;
-            height: auto;
-        }
-
-        /* User Balance */
-        .user-balance {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1E3A66;
-        }
-
-        /* Balance Display Section */
-        .balance-section {
-            margin-top: 20px;
-            background-color: white;
-            color: black;
-            padding: 15px;
-            border-radius: 5px;
-            width: 50%;
-            margin-left: auto;
-            margin-right: auto;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        /* Content Box */
-        .content {
-            margin: 20px auto;
-            width: 80%;
-            background-color: white;
-            color: black;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 600px;
-        }
-
-        /* Events Section */
-        .events {
-            background-color: white;
-            color: black;
-            padding: 10px;
-            margin: 10px auto;
-            width: 60%;
-            border-radius: 5px;
-            max-width: 500px;
-        }
-
-        /* Bets Section */
-        .bets {
-            background-color: gray;
-            color: white;
-            padding: 20px;
-            margin: 10px auto;
-            width: 60%;
-            border-radius: 5px;
-            max-width: 500px;
-        }
-
-        /* Individual Bet Box */
-        .bet {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        /* Player Images */
-        .bet img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        /* Bet Info */
-        .bet-info {
-            flex-grow: 1;
-            text-align: center;
-        }
-
-        /* Buttons */
-        .bet button {
-            background-color: blue;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .bet button:hover {
-            background-color: darkblue;
-        }
-    </style>
-
-    <script>
-        function toggleMenu() {
-            console.log("Menu button clicked!"); 
-            // Add real menu functionality here
-        }
-    </script>
+    
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/home.css') }}">
+    
+    <!-- Load JavaScript -->
+    <script src="{{ url_for('static', filename='JS/home.js') }}" defer></script>
 </head>
 <body>
 
@@ -147,11 +18,11 @@
     <div class="header">
         <div class="menu-button">
             <a href="#" onclick="toggleMenu()">
-                <img src="/Users/kadenwhitlow/Downloads/menu2.png" alt="Menu">
+                <img src="{{ url_for('static', filename='images/menu2.png') }}" alt="Menu">
             </a>
         </div>
         <div class="logo">
-            <img src="/Users/kadenwhitlow/Documents/Screenshot 2025-02-11 at 4.10.16 PM.png" alt="DUB Logo">
+            <img src="{{ url_for('static', filename='images/dub_logo.png') }}" alt="DUB Logo">
         </div>        
         <div class="user-balance">BALANCE</div>
     </div>
@@ -172,27 +43,32 @@
     <div class="bets">
         <h2>TOP BETS</h2>
         <div class="bet">
-            <img src="images/justin_fields.jpg" alt="Justin Fields">
+            <img src="{{ url_for('static', filename='images/justin_fields.jpg') }}" alt="Justin Fields">
             <div class="bet-info">
+                <p>Justin Fields</p>
                 <p>1.5 CATCHES</p>
                 <button>OVER</button>
                 <button>UNDER</button>
+                <p>Player Prop</p>
             </div>
         </div>
         <div class="bet">
-            <img src="images/player2.jpg" alt="Player 2">
+            <img src="{{ url_for('static', filename='images/player2.jpg') }}" alt="Player 2">
             <div class="bet-info">
-                <p>55.5 RUSHING YARDS</p>
+                <p>Player 2 /n 55.5 RUSHING YARDS</p>
                 <button>OVER</button>
                 <button>UNDER</button>
+                <p>Player Prop</p>
             </div>
         </div>
         <div class="bet">
-            <img src="images/player3.jpg" alt="Player 3">
+            <img src="{{ url_for('static', filename='images/player3.jpg') }}" alt="Player 3">
             <div class="bet-info">
+                <p>Player 3</p>
                 <p>25.5 YARDS</p>
                 <button>OVER</button>
                 <button>UNDER</button>
+                <p>Player Prop</p>
             </div>
         </div>
     </div>
