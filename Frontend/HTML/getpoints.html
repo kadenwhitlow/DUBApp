@@ -1,124 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Points Page Design</title>
-  <style>
-    /* Reset some default browser styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-    }
-
-    /* Top Bar */
-    .top-bar {
-      background-color: #004477; /* Drake Blue */
-      color: #fff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-    }
-    .top-bar .logo {
-      text-align: center;
-      flex: 1;
-    }
-    .menu, .user-balance {
-      width: 120px;
-      text-align: center;
-    }
-
-    /* Section Title Bars (GET POINTS / POINT OPPORTUNITIES) */
-    .section-title {
-      background-color: #ffffff;
-      color: #004477; /* Drake Blue */
-      text-align: center;
-      font-weight: bold;
-      padding: 1rem;
-      margin-top: 1rem;
-      border-bottom: 3px solid #004477; /* Adds a subtle separator */
-    }
-
-    /* Gray content boxes */
-    .content-box {
-      background-color: #999999; /* Cool Gray */
-      padding: 2rem;
-      text-align: center;
-      margin: 0 auto;
-      width: 80%;
-      border-radius: 10px;
-    }
-
-    /* Input styling */
-    .input-container {
-      background-color: #004477; /* Drake Blue */
-      padding: 1rem;
-      border-radius: 10px;
-      display: inline-block;
-    }
-
-    .input-container label {
-      display: block;
-      color: #fff;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
-    }
-
-    .input-container input[type="text"] {
-      padding: 0.5rem;
-      width: 200px;
-      max-width: 100%;
-      border: none;
-      border-radius: 4px;
-    }
-
-    /* Event box */
-    .event-box {
-      background-color: #004477; /* Drake Blue */
-      color: #fff;
-      padding: 1rem;
-      border-radius: 10px;
-      text-align: center;
-      margin-top: 1rem;
-    }
-
-    .event-box p {
-      margin-top: 1rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Points</title>
 </head>
-<body>
+<body style="background-color: #1E3A66; color: white; text-align: center;">
 
-  <!-- Top Bar -->
-  <div class="top-bar">
-    <div class="menu">Menu</div>
-    <div class="logo">Logo</div>
-    <div class="user-balance">User Balance</div>
-  </div>
-
-  <!-- GET POINTS Section -->
-  <div class="section-title">GET POINTS</div>
-  <div class="content-box">
-    <div class="input-container">
-      <label for="code">Enter Code:</label>
-      <input type="text" id="code" name="code" placeholder="Enter Code">
+    <!-- Header -->
+    <div class="header" style="display: flex; justify-content: space-between; align-items: center; background-color: #162447; padding: 15px 20px;">
+        <div class="menu-button"><img src="menu.png" alt="Menu" style="width: 40px; cursor: pointer;"></div>
+        <div class="logo"><img src="logo.png" alt="Logo" style="width: 120px;"></div>
+        <div class="user-balance" style="font-size: 18px; font-weight: bold; color: #FFC107;">User Balance</div>
     </div>
-  </div>
 
-  <!-- POINT OPPORTUNITIES Section -->
-  <div class="section-title">POINT OPPORTUNITIES</div>
-  <div class="content-box">
-    <div class="event-box">
-      <h3>Today's Events</h3>
-      <p>*Callback to live upcoming events on homepage. Also could have recurring daily opportunities like going to the library, going to hubbel, etc.</p>
+    <!-- GET POINTS Section -->
+    <div class="content" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 80%; margin: 20px auto; max-width: 600px;">
+        <h2>GET POINTS</h2>
+        <div>
+            <label for="code">Enter Code:</label><br>
+            <input style="padding: 8px; border-radius: 5px; border: none; margin: 5px;" type="text" id="code" name="code" placeholder="Enter Code">
+            <br>
+            <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 5px; cursor: pointer; border-radius: 5px; font-size: 14px;">Submit</button>
+        </div>
     </div>
-  </div>
+
+    <!-- POINT OPPORTUNITIES Section -->
+    <div class="content" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 80%; margin: 20px auto; max-width: 600px;">
+        <h2>POINT OPPORTUNITIES</h2>
+        <p>Live upcoming events and recurring daily opportunities.</p>
+    </div>
 
 </body>
 </html>
