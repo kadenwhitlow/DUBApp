@@ -92,3 +92,81 @@ body {
 .bet button:hover {
     background-color: #FFA000;
 }
+
+/* Modal Styling */
+#bet-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: black;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 300px;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+#bet-list {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+#bet-list li {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+button#clear-bets {
+    margin-top: 10px;
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Styles for individual bet removal buttons */
+#bet-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#bet-list li button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 12px;
+    transition: background 0.3s;
+}
+
+#bet-list li button:hover {
+    background-color: darkred;
+}
+
