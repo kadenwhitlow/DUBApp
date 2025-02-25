@@ -5,7 +5,7 @@ import json
 from functools import wraps
 
 app = Flask(__name__, template_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend/HTML', static_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend')
-
+app.secret_key = 'test'
 
 def login_required(func):
 	@wraps(func)
@@ -16,6 +16,12 @@ def login_required(func):
 			flash('You need to log in first!', 'error')
 			return redirect(url_for('login'))
 	return wrapper
+##########################################################################################################
+
+#Get the user data from the database
+def get_data(username):
+	
+	return {}
 
 ##########################################################################################################
 
@@ -49,15 +55,14 @@ def add_user(username, password, interests):
 @app.route('/', methods=['GET', 'POST'])
 def login():	
 	if request.method == 'POST':
-		username = request.form['username']
-		password = request.form['password']
+		username = "1" #request.form['username']
+		password = "1" #request.form['password']
 
 		if user_exists(username): 
 			users = load_users()
 			if username in users and users[username]['password'] == password:
 				session['user'] = username
-				news_data = get_data(username)
-				add_data_file(news_data)
+				user_data = get_data(username)
 				return redirect(url_for('home'))
 			else:
 				flash('Invalid username or password. Please try again!', 'error') 
