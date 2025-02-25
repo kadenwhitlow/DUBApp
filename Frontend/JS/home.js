@@ -36,16 +36,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeModal = modal.querySelector(".close");
     const clearBets = modal.querySelector("#clear-bets");
 
-    // Function to update modal content
     function updateCart() {
         betList.innerHTML = "";
         cart.forEach((bet, index) => {
-            console.log(bet);
             const li = document.createElement("li");
-            li.textContent = `${bet.typeOfBet} - ${bet.player} - ${bet.type}`;
+            li.textContent = `${bet.betValue} - ${bet.typeOfBet} - ${bet.player} - ${bet.type}`;
+
+            // Create remove button
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.classList.add("remove-bet");
+            removeButton.dataset.index = index; // Store index for removal
+
+            li.appendChild(removeButton);
             betList.appendChild(li);
         });
+
+        // Attach event listeners to remove buttons
+        document.querySelectorAll(".remove-bet").forEach(button => {
+            button.addEventListener("click", function () {
+                const index = this.dataset.index;
+                cart.splice(index, 1); // Remove bet at index
+                updateCart(); // Update cart UI
+            });
+        });
     }
+
 
     // Event listener for bet buttons
     betButtons.forEach(button => {

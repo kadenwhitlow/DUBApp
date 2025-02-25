@@ -147,3 +147,26 @@ button#clear-bets {
     cursor: pointer;
     border-radius: 5px;
 }
+
+/* Styles for individual bet removal buttons */
+#bet-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#bet-list li button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 12px;
+    transition: background 0.3s;
+}
+
+#bet-list li button:hover {
+    background-color: darkred;
+}
+
