@@ -3,6 +3,14 @@ from flask_restful import Resource, Api
 import requests
 import json
 from functools import wraps
+import datetime
+import sys
+import os
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
+from DUBDatabaseFiles.DynamoDBClass import DynamoTable
+
+DT = DynamoTable("DUBUsers")
 
 app = Flask(__name__, template_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend/HTML', static_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend')
 app.secret_key = 'test'
@@ -16,12 +24,7 @@ def login_required(func):
 			flash('You need to log in first!', 'error')
 			return redirect(url_for('login'))
 	return wrapper
-##########################################################################################################
 
-#Get the user data from the database
-def get_data(username):
-	
-	return {}
 
 ##########################################################################################################
 
@@ -29,40 +32,44 @@ def get_data(username):
 
 # Check if a user exists
 def user_exists(username):
-	users = load_users()
-	return username in users
+    users = load_users()
+    if username in users:
+        return True
+    else:
+        return False
 
-# Load all users from users.json
+# Load all users from the dynamodb database
 def load_users():
-	try:
-		with open('users.json', 'r') as f:
-			return json.load(f)
-	except FileNotFoundError:
-		return {}  
+    users = {}
+    for i in DT.returnAllTableItems():
+        users[i['user_id']] = {
+            'total_losses': i['total_losses'], 
+            'current_bets': i['current_bets'], 
+            'password': i['password'], 
+            'account_balance': i['account_balance'], 
+            'date_joined': i['date_joined'], 
+            'previous_bets': i['previous_bets'], 
+            'total_winnings': i['total_winnings']
+        }
+    
+    return users
 
 # Add new user
-def add_user(username, password, interests):
-	users = load_users()
-	users[username] = {
-		"password": password,
-		"interests": interests
-	}
-	with open('users.json', 'w') as f:
-		json.dump(users, f)
+def add_user(username, password):
+    DT.addUserToTable(username, password, datetime.datetime.now())
 	
 ##########################################################################################################
 
 @app.route('/', methods=['GET', 'POST'])
 def login():	
 	if request.method == 'POST':
-		username = "1" #request.form['username']
-		password = "1" #request.form['password']
+		username = request.form['username']
+		password = request.form['password']
 
 		if user_exists(username): 
 			users = load_users()
-			if username in users and users[username]['password'] == password:
+			if users[username]['password'] == password:
 				session['user'] = username
-				user_data = get_data(username)
 				return redirect(url_for('home'))
 			else:
 				flash('Invalid username or password. Please try again!', 'error') 
@@ -74,6 +81,20 @@ def login():
 	
 	else:
 		return render_template('login.html') 
+
+@app.route("/home")
+@login_required
+def home():
+    if "user" in session:
+        user_data = session["user"]  # Access user data
+        return render_template("home.html", user=user_data)
+    else:
+        return redirect(url_for("login"))
+    
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    return redirect(url_for("login"))
 
 def verify_login():
     
