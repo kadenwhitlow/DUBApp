@@ -4,13 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Get Points</title>
+
+    <link rel="stylesheet" href="/Frontend/CSS/home.css">
+    <script src="/Frontend/JS/home.js" defer></script>
+    
 </head>
 <body style="background-color: #1E3A66; color: white; text-align: center;">
 
     <!-- Header -->
     <div class="header" style="display: flex; justify-content: space-between; align-items: center; background-color: #162447; padding: 15px 20px;">
-        <div class="menu-button"><img src="menu.png" alt="Menu" style="width: 40px; cursor: pointer;"></div>
-        <div class="logo"><img src="logo.png" alt="Logo" style="width: 120px;"></div>
+        <div class="dropdown">
+            <button onclick="toggleMenu()" class="dropbtn">Menu</button>
+            <div id="myDropdown" class="dropdown-content">
+                <a href="Home.html">Home</a>
+                <a href="My_Bets.html">My Bets</a>
+                <a href="official_bets.html">Official Bets</a>
+              </div>
+        </div>
+        <div class="logo"><img src="/Frontend/Images/logoDUB.png" alt="Logo" style="width: 120px;"></div>
         <div class="user-balance" style="font-size: 18px; font-weight: bold; color: #FFC107;">User Balance</div>
     </div>
 

@@ -16,13 +16,16 @@
 
     <!-- Header -->
     <div class="header">
-        <div class="menu-button">
-            <a href="#" onclick="toggleMenu()">
-                <img src="{{ url_for('static', filename='images/menu2.png') }}" alt="Menu">
-            </a>
+        <div class="dropdown">
+            <button onclick="toggleMenu()" class="dropbtn">Menu</button>
+            <div id="myDropdown" class="dropdown-content">
+                <a href="official_bets.html">Official Bets</a>
+                <a href="My_Bets.html">My Bets</a>
+                <a href="getpoints.html">Earn Points</a>
+              </div>
         </div>
         <div class="logo">
-            <img src="{{ url_for('static', filename='images/dub_logo.png') }}" alt="DUB Logo">
+            <img src="/Frontend/Images/logoDUB.png" alt="DUB Logo">
         </div>        
         <div class="user-balance">BALANCE</div>
     </div>
