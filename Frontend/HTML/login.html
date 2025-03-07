@@ -6,7 +6,6 @@
     <title>Login</title>
 </head>
 <body style="background-color: #1E3A66; color: white; text-align: center;">
-
     <!-- Header -->
     <div class="header" style="display: flex; justify-content: space-between; align-items: center; background-color: #162447; padding: 15px 20px;">
         <div class="menu-button"><img src="menu.png" alt="Menu" style="width: 40px; cursor: pointer;"></div>
@@ -17,13 +16,31 @@
     <!-- Login Form -->
     <div class="content" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 80%; margin: 20px auto; max-width: 600px;">
         <h1>Login</h1>
-        <form action="/login_user" method="post">
+        <form action="/" method="POST">
             <label for="username">Username:</label><br>
             <input style="padding: 8px; border-radius: 5px; border: none; margin: 5px;" type="text" id="username" name="username" required><br>
             <label for="password">Password:</label><br>
             <input style="padding: 8px; border-radius: 5px; border: none; margin: 5px;" type="password" id="password" name="password" required><br>
             <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 5px; cursor: pointer; border-radius: 5px; font-size: 14px;" type="submit">Login</button>
         </form>
+    </div>
+
+            <!-- FLASH MESSAGES -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {% if category == 'error' %}error{% else %}success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+    <!-- User account creation link-->
+    <div class="link">
+        <p>Don't have an account? <a href="/profile_setup">Sign Up</a></p>
     </div>
 
 </body>
