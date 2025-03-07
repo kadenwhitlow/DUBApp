@@ -357,32 +357,3 @@ button#clear-bets {
       
       /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
       .show {display:block;}
-
-
-      .flash-messages {
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1000;
-        padding: 10px;
-        width: auto;
-    }
-    
-    .flash-message {
-        padding: 10px;
-        margin-bottom: 5px;
-        border-radius: 5px;
-        font-weight: bold;
-    }
-    
-    .flash-message.error {
-        background-color: red;
-        color: white;
-    }
-    
-    .flash-message.success {
-        background-color: green;
-        color: white;
-    }
-    
