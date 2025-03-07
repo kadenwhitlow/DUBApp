@@ -16,7 +16,7 @@ class DynamoTable:
     def __init__(self, table_name):
         
         self.table_name = table_name
-        self.dynamodb = boto3.resource("dynamodb")
+        self.dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.table = self.dynamodb.Table(self.table_name)
         
     def addUserToTable(self, username, password, date):
