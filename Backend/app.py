@@ -76,7 +76,7 @@ def login():
 				return render_template('login.html') 
 			
 		else:
-			flash('User does not exist. Please sign up below!', 'error') 
+			flash('User does not exist. Please sign up below!', 'error')
 			return render_template('login.html') 
 	
 	else:
@@ -85,11 +85,12 @@ def login():
 @app.route("/home")
 @login_required
 def home():
-    if "user" in session:
+    if "user" not in session:
+        flash("Please log in to continue.", "error")
+        return redirect(url_for("login"))
+    else:
         user_data = session["user"]  # Access user data
         return render_template("home.html", user=user_data)
-    else:
-        return redirect(url_for("login"))
     
 @app.route("/logout")
 def logout():
