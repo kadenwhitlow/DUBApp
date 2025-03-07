@@ -170,30 +170,218 @@ button#clear-bets {
     background-color: darkred;
 }
 
-.flash-messages {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    padding: 10px;
-    width: auto;
-}
+.container {
+    cursor: pointer;
+    }
+    
+    .bar1, .bar2, .bar3 {
+    width: 35px;
+    height: 5px;
+    background-color: #333;
+    margin: 6px 0;
+    transition: 0.4s;
+    }
+    
+    .change .bar1 {
+    transform: translate(0, 11px) rotate(-45deg);
+    }
+    
+    .change .bar2 {opacity: 0;}
+    
+    .change .bar3 {
+    transform: translate(0, -11px) rotate(45deg);
+    }
+    
+    .top-bar{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        height: 75px;
+    }
+    
+    .top-bar img {
+        height: 100%; 
+        width: auto; 
+        object-fit: cover; 
+    }
+    
+    .search form {
+        display: flex;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    input[type="text"] {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        outline: none;
+    }
+    
+    button {
+        padding: 8px;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .box {
+        box-sizing: border-box;
+        display:flex;
+        flex-direction: column;
+        background-color: gray;
+        width: 300px;
+        height: 200px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+    .row {
+        display: flex;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .row-top {
+        justify-content: space-between;  
+        align-items: center;  
+    }
+    
+    .row-top img {
+        width: 20%;  
+        height: auto;
+    }
+    
+    .row-middle {
+        justify-content: space-around;  
+        gap: 10px;  
+    }
+    
+    .row-middle button {
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+    
+    .row-bottom {
+        justify-content: space-between;
+        text-align: center; 
+    }
+    
+    .row-bottom p {
+        margin: 0 10px;
+    }
+    
+    h1 {
+        margin: 0;
+    }
+    
+    .buttonn {
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        }
+    
+    .button1 {background-color: green;}
+    .button2 {background-color: red;}
+    
+    .progress-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .progress-wrapper progress {
+        width: 100%;
+    }
+    .progress {
+        width: 100%;
+        background-color: red;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 10px;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        width: 30%;
+        background-color: green;
+    }
+    
+    /* Dropdown Button */
+    .dropbtn {
+        background-color: #3498DB;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+      }
+      
+      /* Dropdown button on hover & focus */
+      .dropbtn:hover, .dropbtn:focus {
+        background-color: #2980B9;
+      }
+      
+      /* The container <div> - needed to position the dropdown content */
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      
+      /* Dropdown Content (Hidden by Default) */
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+      }
+      
+      /* Links inside the dropdown */
+      .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      
+      /* Change color of dropdown links on hover */
+      .dropdown-content a:hover {background-color: #ddd;}
+      
+      /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+      .show {display:block;}
 
-.flash-message {
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    font-weight: bold;
-}
 
-.flash-message.error {
-    background-color: red;
-    color: white;
-}
-
-.flash-message.success {
-    background-color: green;
-    color: white;
-}
-
+      .flash-messages {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        padding: 10px;
+        width: auto;
+    }
+    
+    .flash-message {
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    
+    .flash-message.error {
+        background-color: red;
+        color: white;
+    }
+    
+    .flash-message.success {
+        background-color: green;
+        color: white;
+    }
