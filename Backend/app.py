@@ -9,6 +9,8 @@ import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from DUBDatabaseFiles.DynamoDBClass import DynamoTable
+from flask import get_flashed_messages
+
 
 DT = DynamoTable("DUBUsers")
 
@@ -62,35 +64,39 @@ def add_user(username, password):
 
 @app.route('/', methods=['GET', 'POST'])
 def login():	
-	if request.method == 'POST':
-		username = request.form['username']
-		password = request.form['password']
+    print("Rendering login page")  # Debugging
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        if user_exists(username): 
+            users = load_users()
+            if users[username]['password'] == password:
+                session['user'] = username
+                return redirect(url_for('home'))
+            else:
+                session.modified = True  # Ensures Flask updates session
+                flash('Invalid username or password. Please try again!', 'error') 
+                messages = get_flashed_messages(with_categories=True)
+                print(messages)  # Debug: See if messages exist
+                return render_template('login.html') 
+        
+        else:
+            flash('User does not exist. Please sign up below!', 'error')
+            return render_template('login.html') 
+    else:
+        return render_template('login.html') 
 
-		if user_exists(username): 
-			users = load_users()
-			if users[username]['password'] == password:
-				session['user'] = username
-				return redirect(url_for('home'))
-			else:
-				flash('Invalid username or password. Please try again!', 'error') 
-				return render_template('login.html') 
-			
-		else:
-			flash('User does not exist. Please sign up below!', 'error')
-			return render_template('login.html') 
-	
-	else:
-		return render_template('login.html') 
-
-@app.route("/home")
+@app.route("/home", methods=['GET', 'POST'])
 @login_required
 def home():
-    if "user" not in session:
-        flash("Please log in to continue.", "error")
+    if "user" not in session:  # Extra safety check
+        flash("You need to log in first!", "error")
         return redirect(url_for("login"))
-    else:
-        user_data = session["user"]  # Access user data
-        return render_template("home.html", user=user_data)
+    
+    user_data = session["user"]
+    return render_template("home.html", user=user_data)
+
     
 @app.route("/logout")
 def logout():
