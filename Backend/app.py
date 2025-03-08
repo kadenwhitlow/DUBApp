@@ -51,14 +51,15 @@ def load_users():
             'account_balance': i['account_balance'], 
             'date_joined': i['date_joined'], 
             'previous_bets': i['previous_bets'], 
-            'total_winnings': i['total_winnings']
+            'total_winnings': i['total_winnings'],
+            'email': i['email']
         }
     
     return users
 
 # Add new user
-def add_user(username, password):
-    DT.addUserToTable(username, password, datetime.datetime.now())
+def add_user(username, password, email):
+    DT.addUserToTable(username, password, email, datetime.datetime.now().isoformat())
 	
 ##########################################################################################################
 
@@ -86,6 +87,34 @@ def login():
             return render_template('login.html') 
     else:
         return render_template('login.html') 
+    
+@app.route('/account_creation', methods=['GET', 'POST'])
+def account_creation():
+    users = load_users()
+    
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        repassword = request.form['repassword']
+        email = request.form['email']
+        
+        # Check if username already exists
+        if username in users:
+            flash('Username taken.', 'error')
+            return redirect(url_for('account_creation'))
+        
+        # Check if passwords match
+        if password != repassword:
+            flash('Passwords do not match.', 'error')
+            return redirect(url_for('account_creation'))
+        
+        # Store the new user
+        add_user(username, password, email)
+        
+        flash('Account created successfully!', 'success')
+        return redirect(url_for('login'))  # Redirect to login page after account creation
+    
+    return render_template('account_creation.html')
 
 @app.route("/home", methods=['GET', 'POST'])
 @login_required
@@ -96,6 +125,7 @@ def home():
     
     user_data = session["user"]
     return render_template("home.html", user=user_data)
+
 
     
 @app.route("/logout")
