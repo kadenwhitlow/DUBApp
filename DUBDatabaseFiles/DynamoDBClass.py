@@ -19,12 +19,13 @@ class DynamoTable:
         self.dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.table = self.dynamodb.Table(self.table_name)
         
-    def addUserToTable(self, username, password, date):
+    def addUserToTable(self, username, password, email, date):
         try:
             self.table.put_item(
                 Item={
                     "user_id": username,
                     "password": password,
+                    "email": email,
                     'total_losses': 0, 
                     'current_bets': [], 
                     'account_balance': 0, 
