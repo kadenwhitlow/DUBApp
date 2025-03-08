@@ -17,6 +17,7 @@ DT = DynamoTable("DUBUsers")
 app = Flask(__name__, template_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend/HTML', static_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend')
 app.secret_key = 'test'
 
+#The login required function, which requires users to be logged in before accessing other pages and functions
 def login_required(func):
 	@wraps(func)
 	def wrapper(*args, **kwargs):
@@ -63,6 +64,7 @@ def add_user(username, password, email):
 	
 ##########################################################################################################
 
+#Route and function that is used for our login page
 @app.route('/', methods=['GET', 'POST'])
 def login():	
     print("Rendering login page")  # Debugging
@@ -88,6 +90,7 @@ def login():
     else:
         return render_template('login.html') 
     
+#Route and function that is used for the account creation page
 @app.route('/account_creation', methods=['GET', 'POST'])
 def account_creation():
     users = load_users()
@@ -116,6 +119,7 @@ def account_creation():
     
     return render_template('account_creation.html')
 
+#Route and function that is used for our home page
 @app.route("/home", methods=['GET', 'POST'])
 @login_required
 def home():
@@ -126,23 +130,16 @@ def home():
     user_data = session["user"]
     return render_template("home.html", user=user_data)
 
+#Route and function that is used to update and view the balance of a users account
 @app.route("/balance")
 def balance():
     if "user" in session:
         username = session["user"]
     users = load_users()
     if username in users:
-        return jsonify({"balance": users[username]["account_balance"]})  # Return balance
+        return jsonify({"balance": users[username]["account_balance"]})
     
-    return jsonify({"balance": "N/A"})  # Default if user not found
-    
-
-
-    
-@app.route("/logout")
-def logout():
-    session.pop("user", None)
-    return redirect(url_for("login"))
+    return jsonify({"balance": "N/A"})
 
 if __name__ == '__main__':
     app.run(debug=True)

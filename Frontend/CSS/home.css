@@ -22,6 +22,15 @@ body {
     cursor: pointer;
 }
 
+.logout{
+    background-color: #3498DB;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
 .logo img {
     width: 120px;
 }

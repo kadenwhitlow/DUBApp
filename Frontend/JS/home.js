@@ -12,6 +12,14 @@ function toggleMenu() {
     alert("Menu button clicked!"); // Replace with actual menu functionality
 }
 
+function logOut() {
+    fetch("/logout", { method: "GET" })
+    .then(() => {
+        window.location.href = "/";  // Redirect to login page after logout
+    })
+    .catch(error => console.error("Logout failed:", error));
+}
+
 // -----------------------------------------------------------------------------------------------------
 
 // Example usage: updateBalance(150);
@@ -137,6 +145,6 @@ function updateBalance() {
         .catch(error => console.error("Error fetching balance:", error));
 }
 
-setInterval(updateBalance, 5000);  // Refresh balance every 5 seconds
+//setInterval(updateBalance, 120000);  // Refresh balance every 5 seconds
 updateBalance();  // Call once immediately on page load
 
