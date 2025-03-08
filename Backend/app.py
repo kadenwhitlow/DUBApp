@@ -163,14 +163,15 @@ def place_bets():
     bet_value = cleaned_bet_details[0]
     bet_prop = cleaned_bet_details[1]
     player = cleaned_bet_details[2]
-    bet_type = cleaned_bet_details[3]
+    bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
 
-    print(f"Placing bet: {bet_type} {bet_value} {bet_prop} on {player} for ${bet_size}")
+    print(f"Placing bet: {bet_type} {bet_value} {bet_prop} on {player} for ${bet_size} at {bet_odds}")
+    process_bet(bet_value, player, bet_type, bet_prop, bet_odds)
 
     return jsonify({"message": "Bets placed successfully.", "new_balance": user_balance})
 
 
-def process_bet(bet_value, player, type_of_bet, bet_type):
+def process_bet(bet_value, player, type_of_bet, bet_prop, bet_odds):
     
     return None
 

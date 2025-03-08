@@ -18,6 +18,9 @@ class DynamoTable:
         self.table_name = table_name
         self.dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.table = self.dynamodb.Table(self.table_name)
+    
+    def addBetToTable(self, bet_value, player, type_of_bet, bet_prop, bet_odds):
+        self.table.
         
     def addUserToTable(self, username, password, email, date):
         try:
