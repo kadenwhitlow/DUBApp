@@ -12,6 +12,8 @@ function toggleMenu() {
     alert("Menu button clicked!"); // Replace with actual menu functionality
 }
 
+// -----------------------------------------------------------------------------------------------------
+
 // Example usage: updateBalance(150);
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -99,6 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// -----------------------------------------------------------------------------------------------------
 
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
@@ -119,3 +122,21 @@ function toggleMenu() {
       }
     }
   }
+
+
+// -----------------------------------------------------------------------------------------------------
+
+// Update the balance values dynamically with our AWS database call
+
+function updateBalance() {
+    fetch("/balance")  // Call the Flask route
+        .then(response => response.json()) 
+        .then(data => {
+            document.querySelector(".user-balance").textContent = `Balance: $${data.balance}`;
+        })
+        .catch(error => console.error("Error fetching balance:", error));
+}
+
+setInterval(updateBalance, 5000);  // Refresh balance every 5 seconds
+updateBalance();  // Call once immediately on page load
+

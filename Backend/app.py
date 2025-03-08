@@ -126,6 +126,17 @@ def home():
     user_data = session["user"]
     return render_template("home.html", user=user_data)
 
+@app.route("/balance")
+def balance():
+    if "user" in session:
+        username = session["user"]
+    users = load_users()
+    if username in users:
+        return jsonify({"balance": users[username]["account_balance"]})  # Return balance
+    
+    return jsonify({"balance": "N/A"})  # Default if user not found
+    
+
 
     
 @app.route("/logout")
