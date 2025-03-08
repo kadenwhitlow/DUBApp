@@ -157,6 +157,16 @@ button#clear-bets {
     border-radius: 5px;
 }
 
+button#place-bets {
+    margin-top: 10px;
+    background: green;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
 /* Styles for individual bet removal buttons */
 #bet-list li {
     display: flex;
