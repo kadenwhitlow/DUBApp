@@ -172,6 +172,8 @@ def place_bets():
 
 
 def process_bet(bet_value, player, type_of_bet, bet_prop, bet_odds):
+    DT.subtractBalanceFromTable(balance(), bet_value)
+    DT.addBetToTable(bet_value, player, type_of_bet, bet_prop, bet_odds)
     
     return None
 

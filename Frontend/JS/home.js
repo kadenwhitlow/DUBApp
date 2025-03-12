@@ -202,7 +202,7 @@ function updateBalance() {
     fetch("/balance")  // Call the Flask route
         .then(response => response.json()) 
         .then(data => {
-            document.querySelector(".user-balance").textContent = `Balance: $${data.balance}`;
+            document.querySelector(".user-balance").textContent = `DUB Coins: ⌽${data.balance}`;
         })
         .catch(error => console.error("Error fetching balance:", error));
 }

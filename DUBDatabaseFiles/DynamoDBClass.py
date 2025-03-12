@@ -20,7 +20,12 @@ class DynamoTable:
         self.table = self.dynamodb.Table(self.table_name)
     
     def addBetToTable(self, bet_value, player, type_of_bet, bet_prop, bet_odds):
-        self.table.
+        self.table.update_item()
+        return None
+    
+    def subtractBalanceFromTable(self, bal, bet_value):
+        new_balance = bal - bet_value
+        self.table.update_item(Key={'balance': new_balance})
         
     def addUserToTable(self, username, password, email, date):
         try:
