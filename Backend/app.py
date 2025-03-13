@@ -17,6 +17,7 @@ DT = DynamoTable("DUBUsers")
 app = Flask(__name__, template_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend/HTML', static_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend')
 app.secret_key = 'test'
 
+#The login required function, which requires users to be logged in before accessing other pages and functions
 def login_required(func):
 	@wraps(func)
 	def wrapper(*args, **kwargs):
@@ -57,12 +58,18 @@ def load_users():
     
     return users
 
+#LOAD THE USERS
+users = load_users()
+
+
+
 # Add new user
 def add_user(username, password, email):
     DT.addUserToTable(username, password, email, datetime.datetime.now().isoformat())
 	
 ##########################################################################################################
 
+#Route and function that is used for our login page
 @app.route('/', methods=['GET', 'POST'])
 def login():	
     print("Rendering login page")  # Debugging
@@ -71,7 +78,6 @@ def login():
         password = request.form['password']
         
         if user_exists(username): 
-            users = load_users()
             if users[username]['password'] == password:
                 session['user'] = username
                 return redirect(url_for('home'))
@@ -88,6 +94,7 @@ def login():
     else:
         return render_template('login.html') 
     
+#Route and function that is used for the account creation page
 @app.route('/account_creation', methods=['GET', 'POST'])
 def account_creation():
     users = load_users()
@@ -116,6 +123,7 @@ def account_creation():
     
     return render_template('account_creation.html')
 
+#Route and function that is used for our home page
 @app.route("/home", methods=['GET', 'POST'])
 @login_required
 def home():
@@ -126,12 +134,53 @@ def home():
     user_data = session["user"]
     return render_template("home.html", user=user_data)
 
-
+#Route and function that is used to update and view the balance of a users account
+@app.route("/balance")
+def balance():
+    if "user" in session:
+        username = session["user"]
+    if username in users:
+        return jsonify({"balance": users[username]["account_balance"]})
     
-@app.route("/logout")
-def logout():
-    session.pop("user", None)
-    return redirect(url_for("login"))
+    return jsonify({"balance": "N/A"})
+
+@app.route('/place_bets', methods=['POST'])
+def place_bets():
+    
+    user_balance = float(request.json.get('account_balance'))
+    print(user_balance)
+
+    bet_data = request.json.get('bet-list')
+
+    bet_size = float(request.json.get('bet-size'))
+
+    if bet_size <= 0 or bet_size > user_balance:
+        return jsonify({"error": "Invalid bet size. Check your balance."}), 400
+
+    # makes sure bet_data is split properly
+    bet_details = bet_data[0].split("-")
+    cleaned_bet_details = [item.strip() for item in bet_details]
+
+    print("B DETAILS: ", cleaned_bet_details)
+
+    bet_value = cleaned_bet_details[0]
+    bet_prop = cleaned_bet_details[1]
+    player = cleaned_bet_details[2]
+    bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
+
+    print(f"Placing bet: {bet_type} {bet_value} {bet_prop} on {player} for ${bet_size} at {bet_odds}")
+    process_bet(bet_value, player, bet_type, bet_prop, bet_odds)
+
+    return jsonify({"message": "Bets placed successfully.", "new_balance": user_balance})
+
+
+def process_bet(bet_value, player, type_of_bet, bet_prop, bet_odds):
+    if "user" in session:
+        username = session["user"]
+    DT.subtractBalanceFromTable(balance(), users[username]["user_id"], bet_value)
+    DT.addBetToTable(bet_value, player, type_of_bet, bet_prop, bet_odds, users[username]["user_id"])
+    
+    return None
 
 if __name__ == '__main__':
     app.run(debug=True)

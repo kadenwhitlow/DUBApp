@@ -18,6 +18,47 @@ class DynamoTable:
         self.table_name = table_name
         self.dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.table = self.dynamodb.Table(self.table_name)
+    
+    def addBetToTable(self, bet_value, player, type_of_bet, bet_prop, bet_odds, user_id):
+        try:
+            self.table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET bets = list_append(if_not_exists(bets, :empty_list), :new_bet)",
+                ExpressionAttributeValues={
+                    ':new_bet': [{
+                        'bet_value': bet_value,
+                        'type_of_bet': type_of_bet,
+                        'bet_prop': bet_prop,
+                        'bet_odds': bet_odds,
+                        'player': player,
+                    }],
+                    ':empty_list': []
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+        except ClientError as err:
+            logger.error(
+                "Couldn't update bet for player %s in table %s. Here's why: %s: %s",
+                player,
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+
+    
+    def subtractBalanceFromTable(self, current_balance, user_id, bet_value):
+        new_balance = current_balance - bet_value 
+
+        response = self.table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression="SET balance = :new_balance",
+            ExpressionAttributeValues={':new_balance': new_balance},
+            ReturnValues="UPDATED_NEW"
+        )
+        
+        return response
+
         
     def addUserToTable(self, username, password, email, date):
         try:
