@@ -58,6 +58,11 @@ def load_users():
     
     return users
 
+#LOAD THE USERS
+users = load_users()
+
+
+
 # Add new user
 def add_user(username, password, email):
     DT.addUserToTable(username, password, email, datetime.datetime.now().isoformat())
@@ -73,7 +78,6 @@ def login():
         password = request.form['password']
         
         if user_exists(username): 
-            users = load_users()
             if users[username]['password'] == password:
                 session['user'] = username
                 return redirect(url_for('home'))
@@ -135,7 +139,6 @@ def home():
 def balance():
     if "user" in session:
         username = session["user"]
-    users = load_users()
     if username in users:
         return jsonify({"balance": users[username]["account_balance"]})
     
@@ -144,7 +147,7 @@ def balance():
 @app.route('/place_bets', methods=['POST'])
 def place_bets():
     
-    user_balance = float(request.json.get('user_balance'))
+    user_balance = float(request.json.get('account_balance'))
     print(user_balance)
 
     bet_data = request.json.get('bet-list')
@@ -172,8 +175,10 @@ def place_bets():
 
 
 def process_bet(bet_value, player, type_of_bet, bet_prop, bet_odds):
-    DT.subtractBalanceFromTable(balance(), bet_value)
-    DT.addBetToTable(bet_value, player, type_of_bet, bet_prop, bet_odds)
+    if "user" in session:
+        username = session["user"]
+    DT.subtractBalanceFromTable(balance(), users[username]["user_id"], bet_value)
+    DT.addBetToTable(bet_value, player, type_of_bet, bet_prop, bet_odds, users[username]["user_id"])
     
     return None
 
