@@ -1,6 +1,7 @@
 import boto3
 import logging
 from botocore.exceptions import ClientError
+from decimal import Decimal
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR)
@@ -23,7 +24,7 @@ class DynamoTable:
         try:
             self.table.update_item(
                 Key={'user_id': user_id},
-                UpdateExpression="SET bets = list_append(if_not_exists(bets, :empty_list), :new_bet)",
+                UpdateExpression="SET current_bets = list_append(if_not_exists(current_bets, :empty_list), :new_bet)",
                 ExpressionAttributeValues={
                     ':new_bet': [{
                         'bet_value': bet_value,
@@ -48,11 +49,11 @@ class DynamoTable:
 
     
     def subtractBalanceFromTable(self, current_balance, user_id, bet_value):
-        new_balance = current_balance - bet_value 
+        new_balance = Decimal(current_balance) - Decimal(bet_value)
 
         response = self.table.update_item(
             Key={'user_id': user_id},
-            UpdateExpression="SET balance = :new_balance",
+            UpdateExpression="SET account_balance = :new_balance",
             ExpressionAttributeValues={':new_balance': new_balance},
             ReturnValues="UPDATED_NEW"
         )

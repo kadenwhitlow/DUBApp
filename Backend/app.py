@@ -53,7 +53,8 @@ def load_users():
             'date_joined': i['date_joined'], 
             'previous_bets': i['previous_bets'], 
             'total_winnings': i['total_winnings'],
-            'email': i['email']
+            'email': i['email'],
+            'user_id': i['user_id'],
         }
     
     return users
@@ -72,6 +73,7 @@ def add_user(username, password, email):
 #Route and function that is used for our login page
 @app.route('/', methods=['GET', 'POST'])
 def login():	
+    users = load_users()
     print("Rendering login page")  # Debugging
     if request.method == 'POST':
         username = request.form['username']
@@ -146,8 +148,8 @@ def balance():
 
 @app.route('/place_bets', methods=['POST'])
 def place_bets():
-    
-    user_balance = float(request.json.get('account_balance'))
+    print("Request JSON:", request.json)
+    user_balance = users[session["user"]]["account_balance"]
     print(user_balance)
 
     bet_data = request.json.get('bet-list')
@@ -177,7 +179,8 @@ def place_bets():
 def process_bet(bet_value, player, type_of_bet, bet_prop, bet_odds):
     if "user" in session:
         username = session["user"]
-    DT.subtractBalanceFromTable(balance(), users[username]["user_id"], bet_value)
+    print(users[username])
+    DT.subtractBalanceFromTable(users[username]["account_balance"], users[username]["user_id"], bet_value)
     DT.addBetToTable(bet_value, player, type_of_bet, bet_prop, bet_odds, users[username]["user_id"])
     
     return None
