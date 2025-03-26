@@ -155,33 +155,42 @@ def place_bets():
     bet_data = request.json.get('bet-list')
 
     bet_size = float(request.json.get('bet-size'))
-
+    
+    bet_parlay = request.json.get('parlay')
+    
     if bet_size <= 0 or bet_size > user_balance:
         return jsonify({"error": "Invalid bet size. Check your balance."}), 400
-
+    
     # makes sure bet_data is split properly
-    bet_details = bet_data[0].split("-")
-    cleaned_bet_details = [item.strip() for item in bet_details]
+    bets_split = []
+    for i in bet_data:
+        bet_details = i.split("-")
+        cleaned_bet_details = [item.strip() for item in bet_details]
+        bet_value = cleaned_bet_details[0]
+        bet_prop = cleaned_bet_details[1]
+        player = cleaned_bet_details[2]
+        bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
+        {
+            'bet_value': bet_value,
+            'type_of_bet': bet_type,
+            'bet_prop': bet_prop,
+            'bet_odds': bet_odds,
+            'player': player,
+        }
+        bets_split.append(cleaned_bet_details)
 
-    print("B DETAILS: ", cleaned_bet_details)
-
-    bet_value = cleaned_bet_details[0]
-    bet_prop = cleaned_bet_details[1]
-    player = cleaned_bet_details[2]
-    bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
-
-    print(f"Placing bet: {bet_type} {bet_value} {bet_prop} on {player} for ${bet_size} at {bet_odds}")
-    process_bet(bet_value, player, bet_type, bet_prop, bet_odds)
+    print("Placing bet....")
+    print(f"PARLAY: {bets_split}")
+    process_bet(bet_value, bets_split)
 
     return jsonify({"message": "Bets placed successfully.", "new_balance": user_balance})
 
-
-def process_bet(bet_value, player, type_of_bet, bet_prop, bet_odds):
+def process_bet(bet_value, bet_list):
     if "user" in session:
         username = session["user"]
     print(users[username])
     DT.subtractBalanceFromTable(users[username]["account_balance"], users[username]["user_id"], bet_value)
-    DT.addBetToTable(bet_value, player, type_of_bet, bet_prop, bet_odds, users[username]["user_id"])
+    DT.addBetToTable(bet_list, users[username]["user_id"])
     
     return None
 
