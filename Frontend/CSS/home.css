@@ -376,3 +376,29 @@ button#place-bets {
       
       /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
       .show {display:block;}
+
+    /* Parlay Button Styling */
+    .place-parlay {
+        background-color: #007BFF; /* Blue background */
+        color: white;
+        font-size: 16px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .place-parlay:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+    button#place-parlay {
+        margin-top: 10px;
+        background: #007BFF;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }

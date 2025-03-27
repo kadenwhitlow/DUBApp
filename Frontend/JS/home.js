@@ -57,8 +57,6 @@ function placeBet() {
     .catch(error => console.error("Bet placement failed:", error));
 }
 
-
-
 // -----------------------------------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -81,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             <button id="clear-bets">Clear Bets</button>
             <button onclick="placeBet()" id="place-bets">Place Bets</button>
+            <button onclick="placeParlay()" id="place-parlay">Place Parlay</button>
         </div>
     `;
     document.body.appendChild(modal);
@@ -89,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeModal = modal.querySelector(".close");
     const clearBets = modal.querySelector("#clear-bets");
     const placeBets = modal.querySelector("#place-bets");
+    const placeParlay = modal.querySelector("#place-parlay");
 
     function updateCart() {
         betList.innerHTML = "";
@@ -163,6 +163,35 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.display = "none";
     });
 
+    // Place parlay bet
+    placeParlay.addEventListener("click", function () {
+        const betSize = parseFloat(betSizeInput.value);
+
+        // Check if the bet size is a valid number and greater than ten cents
+        if (isNaN(betSize) || betSize <= 0.09) {
+            alert("Please enter a valid bet size.");
+            return;
+        }
+
+        // Gather the bet details for the parlay
+        const betList = Array.from(document.querySelectorAll("#bet-list li")).map(li => {
+            return li.childNodes[0].textContent.trim(); // Get only the actual bet text
+        });
+
+        console.log("Placing parlay with size: " + betSize);
+        console.log("Parlay bets:", betList);
+
+        // Here, you'd need to handle the parlay bet placing logic
+        // For example, you might send this to the server to calculate parlay odds
+
+        // Clear the cart after placing parlay
+        cart.length = 0;
+        updateCart();
+
+        // Optionally, close the modal after placing the parlay
+        modal.style.display = "none";
+    });
+
     // Close modal if clicking outside content
     window.addEventListener("click", function (event) {
         if (event.target === modal) {
@@ -177,21 +206,21 @@ document.addEventListener("DOMContentLoaded", function () {
 toggle between hiding and showing the dropdown content */
 function toggleMenu() {
     document.getElementById("myDropdown").classList.toggle("show");
-  }
+}
   
-  // Close the dropdown menu if the user clicks outside of it
-  window.onclick = function(event) {
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
         }
-      }
     }
-  }
+}
 
 
 // -----------------------------------------------------------------------------------------------------
@@ -209,4 +238,3 @@ function updateBalance() {
 
 //setInterval(updateBalance, 120000);  // Refresh balance every 5 seconds
 updateBalance();  // Call once immediately on page load
-

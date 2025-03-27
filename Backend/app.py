@@ -53,7 +53,8 @@ def load_users():
             'date_joined': i['date_joined'], 
             'previous_bets': i['previous_bets'], 
             'total_winnings': i['total_winnings'],
-            'email': i['email']
+            'email': i['email'],
+            'user_id': i['user_id'],
         }
     
     return users
@@ -72,6 +73,7 @@ def add_user(username, password, email):
 #Route and function that is used for our login page
 @app.route('/', methods=['GET', 'POST'])
 def login():	
+    users = load_users()
     print("Rendering login page")  # Debugging
     if request.method == 'POST':
         username = request.form['username']
@@ -146,39 +148,49 @@ def balance():
 
 @app.route('/place_bets', methods=['POST'])
 def place_bets():
-    
-    user_balance = float(request.json.get('account_balance'))
+    print("Request JSON:", request.json)
+    user_balance = users[session["user"]]["account_balance"]
     print(user_balance)
 
     bet_data = request.json.get('bet-list')
 
     bet_size = float(request.json.get('bet-size'))
-
+    
+    bet_parlay = request.json.get('parlay')
+    
     if bet_size <= 0 or bet_size > user_balance:
         return jsonify({"error": "Invalid bet size. Check your balance."}), 400
-
+    
     # makes sure bet_data is split properly
-    bet_details = bet_data[0].split("-")
-    cleaned_bet_details = [item.strip() for item in bet_details]
+    bets_split = []
+    for i in bet_data:
+        bet_details = i.split("-")
+        cleaned_bet_details = [item.strip() for item in bet_details]
+        bet_value = cleaned_bet_details[0]
+        bet_prop = cleaned_bet_details[1]
+        player = cleaned_bet_details[2]
+        bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
+        {
+            'bet_value': bet_value,
+            'type_of_bet': bet_type,
+            'bet_prop': bet_prop,
+            'bet_odds': bet_odds,
+            'player': player,
+        }
+        bets_split.append(cleaned_bet_details)
 
-    print("B DETAILS: ", cleaned_bet_details)
-
-    bet_value = cleaned_bet_details[0]
-    bet_prop = cleaned_bet_details[1]
-    player = cleaned_bet_details[2]
-    bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
-
-    print(f"Placing bet: {bet_type} {bet_value} {bet_prop} on {player} for ${bet_size} at {bet_odds}")
-    process_bet(bet_value, player, bet_type, bet_prop, bet_odds)
+    print("Placing bet....")
+    print(f"PARLAY: {bets_split}")
+    process_bet(bet_value, bets_split)
 
     return jsonify({"message": "Bets placed successfully.", "new_balance": user_balance})
 
-
-def process_bet(bet_value, player, type_of_bet, bet_prop, bet_odds):
+def process_bet(bet_value, bet_list):
     if "user" in session:
         username = session["user"]
-    DT.subtractBalanceFromTable(balance(), users[username]["user_id"], bet_value)
-    DT.addBetToTable(bet_value, player, type_of_bet, bet_prop, bet_odds, users[username]["user_id"])
+    print(users[username])
+    DT.subtractBalanceFromTable(users[username]["account_balance"], users[username]["user_id"], bet_value)
+    DT.addBetToTable(bet_list, users[username]["user_id"])
     
     return None
 
