@@ -170,14 +170,15 @@ def place_bets():
         bet_prop = cleaned_bet_details[1]
         player = cleaned_bet_details[2]
         bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
-        {
+        bet_dict = {
             'bet_value': bet_value,
             'type_of_bet': bet_type,
             'bet_prop': bet_prop,
             'bet_odds': bet_odds,
             'player': player,
+            'bet_status': 'pending'
         }
-        bets_split.append(cleaned_bet_details)
+        bets_split.append(bet_dict)
 
     print("Placing bet....")
     print(f"PARLAY: {bets_split}")
