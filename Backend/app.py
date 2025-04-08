@@ -11,6 +11,9 @@ from DUBDatabaseFiles.DynamoDBClass import DynamoTable
 from flask import get_flashed_messages
 from bs4 import BeautifulSoup
 from datetime import datetime, timezone
+import uuid
+import json
+
 
 DT = DynamoTable("DUBUsers")
 
@@ -238,7 +241,7 @@ def scrape(link):
     return info, info2, history_link
         
 def upcoming_schedule():
-    game_list = []
+    all_games = {}
     schedule_links = ["https://godrakebulldogs.com/sports/softball/schedule",
     "https://godrakebulldogs.com/sports/mens-tennis/schedule",
     "https://godrakebulldogs.com/sports/mens-soccer/schedule",
@@ -259,12 +262,21 @@ def upcoming_schedule():
 
                 if date_obj >= current_utc_time:
                     
+                    unique_id = str(uuid.uuid4())
                     game_data["date"] = date_obj.isoformat()
                     game_data["opponent"] = game_information[0]
                     game_data["sport"] = x.replace("https://godrakebulldogs.com/sports/", "").replace("/schedule", "")
+                    game_data["id"] = unique_id
+                    
+                    
+                    if game_data["date"] in all_games.keys():
+                        all_games[game_data["date"]][unique_id] = game_data
+                    
+                    else:
+                        all_games[game_data["date"]] = {unique_id : game_data}
+                    
 
-                    game_list.append(game_data)
-    return game_list
+    return json.dumps(all_games)
 
 def link_organizer(game_dict):
     if game_dict["sport"] == "softball":
@@ -291,7 +303,6 @@ def update_score(game_dict):
     info, info2, _ = scrape(schedule_link)
 
     for i in range(len(info)):
-        game_data = {}
         
         if info[i].find("a") != None:
             game_information = info[i].find("a")['aria-label'].split(" on ", 1)
@@ -302,39 +313,48 @@ def update_score(game_dict):
 
             if date_obj == game_date and game_information[0] == game_dict["opponent"]:
                 
-                game_data["date"] = date_obj.isoformat()
-                game_data["opponent"] = game_information[0]
-                game_data["sport"] = schedule_link.replace("https://godrakebulldogs.com/sports/", "").replace("/schedule", "")
-
                 if i < len(info2):
                     span = info2[i].find_all("span")
-                    
+
                     if len(span) > 3:
-                        game_data["winner"] = span[1].get_text().replace(",", "")
-                        game_data["score"] = span[2].get_text()
+                        if span[1].get_text().replace(",", "") == "W":
+                            game_dict["winner"] = True
+                        elif span[1].get_text().replace(",", "") == "L":
+                            game_dict["winner"] = False
+
+                        game_dict["score"] = span[2].get_text()
                     else:
-                        game_data["winner"] = None
-                        game_data["score"] = None
+                        game_dict["winner"] = None
+                        game_dict["score"] = None
 
                 else:
-                    game_data["winner"] = None
-                    game_data["score"] = None
+                    game_dict["winner"] = None
+                    game_dict["score"] = None
                 
                 break
 
-    return game_data
+    return game_dict
+
 
 def game_today():
     today_list = []
-    game_data = upcoming_schedule()
+    game_data = json.loads(upcoming_schedule())
 
     current_utc_time = str(datetime.now(timezone.utc))
     current_utc_time = datetime.fromisoformat(current_utc_time).replace(tzinfo=None)
 
-    for i in game_data:
-        if datetime.fromisoformat(i["date"]).date() == current_utc_time.date():
-            today_list.append(i)
+    check_date = ""
+    check_date = "2025-05-07T00:00:00"
+    for i in game_data.keys():
+        date_long = datetime.fromisoformat(i)
+        date = date_long.date()
 
+        if date == current_utc_time.date():
+            check_date = date_long
+    
+    if check_date != "":
+        return list(game_data[check_date].values())
+ 
     return today_list
 
 def betting(game_dict):
@@ -351,11 +371,12 @@ def betting(game_dict):
         for i in info2:
 
             span = i.find_all("span")
-            score = span[2].get_text()
-            score = score.split("-")
+            if len(span) > 2:
+                score = span[2].get_text()
+                score = score.split("-")
 
-            drake_total += int(score[0])
-            game_counter += 1
+                drake_total += int(score[0])
+                game_counter += 1
 
         drake_avg_ppg = drake_total / game_counter
         
@@ -452,7 +473,6 @@ def spreadGenerator(game_data):
 
 def overUnderGenerator(game_data):
     return {'over_under': round(game_data['home_data']['PPG'] + game_data['away_data']['PPG'])}
-
 
 ##########################################################################################################
 if __name__ == '__main__':
