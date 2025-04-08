@@ -3,14 +3,14 @@ from flask_restful import Resource, Api
 import requests
 import json
 from functools import wraps
-import datetime
 import sys
 import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from DUBDatabaseFiles.DynamoDBClass import DynamoTable
 from flask import get_flashed_messages
-
+from datetime import datetime, timezone
+from webscraping import WebScraper
 
 DT = DynamoTable("DUBUsers")
 
@@ -194,5 +194,15 @@ def process_bet(bet_value, bet_list):
     
     return None
 
+##########################################################################################################
+
+#API and Webscraping
+"""
+The home screen should use: upcoming_schedule()
+To calculate daily betting: game_today() gives list of games today then give list to betting() to have the
+same list returned with betting information for each game. The time period could be adjusted. 
+"""
+
+##########################################################################################################
 if __name__ == '__main__':
     app.run(debug=True)
