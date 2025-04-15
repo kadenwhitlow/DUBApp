@@ -62,9 +62,25 @@ class WebScraper():
                     if date_obj >= current_utc_time:
                         
                         unique_id = str(uuid.uuid4())
-                        game_data["date"] = date_obj.isoformat()
+                        game_data["date"] = date_obj.strftime("%B %d, %Y at %I:%M %p")
                         game_data["opponent"] = game_information[0]
-                        game_data["sport"] = x.replace("https://godrakebulldogs.com/sports/", "").replace("/schedule", "")
+                        sport_link = x.replace("https://godrakebulldogs.com/sports/", "").replace("/schedule", "")
+                        
+                        if sport_link == "softball":
+                            game_data["sport"] = "Softball"
+
+                        elif sport_link == "mens-tennis":
+                            game_data["sport"] = "Mens Tennis"
+
+                        elif sport_link == "mens_soccer":
+                            game_data["sport"] = "Mens Soccer"
+
+                        elif sport_link == "womens-soccer":
+                            game_data["sport"] = "Womens Soccer"
+
+                        elif sport_link == "womens-tennis":
+                            game_data["sport"] = "Womens Tennis"
+                        
                         game_data["id"] = unique_id
                         
                         
@@ -108,7 +124,7 @@ class WebScraper():
                 
                 date_obj, current_utc_time = self.date_converter(game_information)
 
-                game_date = datetime.fromisoformat(game_dict["date"])
+                game_date = datetime.strptime(game_dict["date"], "%B %d, %Y at %I:%M %p")
 
                 if date_obj == game_date and game_information[0] == game_dict["opponent"]:
                     
@@ -145,7 +161,7 @@ class WebScraper():
         check_date = ""
         check_date = "2025-05-07T00:00:00"
         for i in game_data.keys():
-            date_long = datetime.fromisoformat(i)
+            date_long = datetime.strptime(i, "%B %d, %Y at %I:%M %p")
             date = date_long.date()
 
             if date == current_utc_time.date():
@@ -192,7 +208,7 @@ class WebScraper():
                     
                     date_obj, current_utc_time = self.date_converter(game_information)
 
-                    game_date = datetime.fromisoformat(y["date"])
+                    game_date = datetime.strptime(y["date"], "%B %d, %Y at %I:%M %p")
 
                     if date_obj == game_date and game_information[0] == y["opponent"]:
                         crawl_link = "https://godrakebulldogs.com" + all_links[i]
@@ -272,7 +288,6 @@ class WebScraper():
 
     def overUnderGenerator(self, game_data):
         return {'over_under': round(game_data['home_data']['PPG'] + game_data['away_data']['PPG'])}
-
 
 
 #print(upcoming_schedule())
