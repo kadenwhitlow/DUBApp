@@ -202,7 +202,14 @@ The home screen should use: upcoming_schedule()
 To calculate daily betting: game_today() gives list of games today then give list to betting() to have the
 same list returned with betting information for each game. The time period could be adjusted. 
 """
+@app.route('/')
+def home():
 
+    ws = WebScraper()
+    game_data = ws.upcoming_schedule()
+    game_dict = json.loads(game_data)
+    
+    return render_template("Home.html", data= game_dict)
 ##########################################################################################################
 if __name__ == '__main__':
     app.run(debug=True)
