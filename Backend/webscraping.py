@@ -94,19 +94,19 @@ class WebScraper():
         return json.dumps(all_games)
 
     def link_organizer(self, game_dict):
-        if game_dict["sport"] == "softball":
+        if game_dict["sport"] == "Softball":
             schedule_link = "https://godrakebulldogs.com/sports/softball/schedule"
 
-        elif game_dict["sport"] == "mens-tennis":
+        elif game_dict["sport"] == "Mens Tennis":
             schedule_link = "https://godrakebulldogs.com/sports/mens-tennis/schedule"
 
-        elif game_dict["sport"] == "mens_soccer":
+        elif game_dict["sport"] == "Mens Soccer":
             schedule_link = "https://godrakebulldogs.com/sports/mens-soccer/schedule"
 
-        elif game_dict["sport"] == "womens-soccer":
+        elif game_dict["sport"] == "Womens Soccer":
             schedule_link = "https://godrakebulldogs.com/sports/womens-soccer/schedule"
 
-        elif game_dict["sport"] == "womens-tennis":
+        elif game_dict["sport"] == "Womens Tennis":
             schedule_link = "https://godrakebulldogs.com/sports/womens-tennis/schedule"
 
         return schedule_link
@@ -292,8 +292,11 @@ class WebScraper():
 
 #print(upcoming_schedule())
 
-#new_dict = [{'date': '2025-03-29T11:00:00', 'opponent': 'Indiana State', 'sport': 'softball', 'id' : "121"}]
+"""new_dict = [{'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'Indiana State', 'sport': 'Softball', 'id' : "121"}]
 #print(update_score(new_dict))
 #print(upcoming_schedule())
 #print(game_today())
 #print(betting(new_dict))
+
+wp = WebScraper()
+print(wp.betting(new_dict))"""
