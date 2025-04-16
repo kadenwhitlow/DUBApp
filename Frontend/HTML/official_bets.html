@@ -36,28 +36,20 @@
         <input style="padding: 8px; border-radius: 5px; border: none; margin: 5px; width: 80%;" type="text" placeholder="Search Bets">
 
         <!-- Bet Example -->
+        {% for i in data %}
         <div class="bet" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #ddd;">
             <img src="/Frontend/Images/basketball.png" alt="User" style="width: 60px; height: 60px; border-radius: 50%;">
             <div class="bet-info" style="flex-grow: 1; text-align: center;">
-                <p>Drake</p>
+                <p>Drake vs. {{ i["opponent"] }}</p>
             </div>
             <div>
-                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Spread -8(-105)</button>
-                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Ov 45.5 (-107)</button>
-                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Money Line (+225)</button>
+                
+                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Spread {{ i["betting"]["spread"] }}</button>
+                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Ov {{ i["betting"]["overUnder"] }}</button>
+                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Home ML {{ i["betting"]["ml"]["home_ml"] }}</button>
+                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Away ML {{ i["betting"]["ml"]["away_ml"] }}</button>
 
             </div>
         </div>
 
-        <!-- Additional Bet -->
-        <div class="bet" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #ddd;">
-            <img src="/Frontend/Images/basketball.png" alt="User" style="width: 60px; height: 60px; border-radius: 50%;">
-            <div class="bet-info" style="flex-grow: 1; text-align: center;">
-                <p>Illinois State</p>
-            </div>
-            <div>
-                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Spread +8(-115)</button>
-                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Un 45.5 (-107)</button>
-                <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;">Money Line (-310)</button>
-            </div>
-        </div>
+        {% endfor %}
