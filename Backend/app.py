@@ -210,6 +210,15 @@ def home():
     game_dict = json.loads(game_data)
     
     return render_template("Home.html", data= game_dict)
+
+@app.route('/official-bets')
+def officialBets():
+
+    #Pull a week worth of data, add the values to a list of dicitionaries
+    game_data = [{'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'Indiana State', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}, {'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'ye state', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}, {'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'Kendrick State', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}]
+    
+    return render_template("official_bets.html", data = game_data)
+
 ##########################################################################################################
 if __name__ == '__main__':
     app.run(debug=True)
