@@ -3,16 +3,19 @@ from flask_restful import Resource, Api
 import requests
 import json
 from functools import wraps
+import datetime
 import sys
 import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from DUBDatabaseFiles.DynamoDBClass import DynamoTable
-from flask import get_flashed_messages
-from datetime import datetime, timezone
-from webscraping import WebScraper
+from generatePoints import GeneratePoints
+
+
 
 DT = DynamoTable("DUBUsers")
+point_dist = GeneratePoints()
+
 
 app = Flask(__name__, template_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend/HTML', static_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend')
 app.secret_key = 'test'
@@ -194,15 +197,18 @@ def process_bet(bet_value, bet_list):
     
     return None
 
-##########################################################################################################
+@app.route('/redeem', methods=['POST'])
+def redeem_code():
+    if "user" not in session:
+        return jsonify({"error": "Log-in Required"}), 403
 
-#API and Webscraping
-"""
-The home screen should use: upcoming_schedule()
-To calculate daily betting: game_today() gives list of games today then give list to betting() to have the
-same list returned with betting information for each game. The time period could be adjusted. 
-"""
+    username = session["user"]
+    code = request.json.get("code")
+    result, status = point_dist.redeem_code(username, code)
+    return jsonify(result), status
 
-##########################################################################################################
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
