@@ -48,38 +48,9 @@
     </div>
 
     <!-- Top Bets -->
-    <div class="bets">
-        <h2>TOP BETS</h2>
-        <div class="bet">
-            <img src="{{ url_for('static', filename='images/justin_fields.jpg') }}" alt="Justin Fields">
-            <div class="bet-info">
-                <p>Justin Fields</p>
-                <p>1.5 CATCHES</p>
-                <button>OVER <span class="over-odds">-110</span></button>
-                <button>UNDER <span class="under-odds">-110</span></button>
-                <p>Player Prop</p>
-            </div>
-        </div>
-        <div class="bet">
-            <img src="{{ url_for('static', filename='images/player2.jpg') }}" alt="Player 2">
-            <div class="bet-info">
-                <p>Player 2</p>
-                <p>55.5 RUSHING YARDS</p>
-                <button>OVER <span class="over-odds">+100</span></button>
-                <button>UNDER <span class="under-odds">-120</span></button>
-                <p>Player Prop</p>
-            </div>            
-        </div>
-        <div class="bet">
-            <img src="{{ url_for('static', filename='images/player3.jpg') }}" alt="Player 3">
-            <div class="bet-info">
-                <p>Player 3</p>
-                <p>25.5 YARDS</p>
-                <button>OVER <span class="over-odds">-120</span></button>
-                <button>UNDER <span class="under-odds">+135</span></button>
-                <p>Player Prop</p>
-            </div>
-        </div>
+    <div class="content" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 80%; margin: 20px auto; max-width: 600px;">
+        <h2>Most Popular Bets</h2>
+        <div id="popular-bets-container"></div>
     </div>
 
 </body>
