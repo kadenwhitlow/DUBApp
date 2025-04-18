@@ -134,7 +134,11 @@ def home():
         return redirect(url_for("login"))
     
     user_data = session["user"]
-    return render_template("home.html", user=user_data)
+    ws = WebScraper()
+    game_data = ws.upcoming_schedule()
+    game_dict = json.loads(game_data)
+    
+    return render_template("home.html", user=user_data, data=game_dict)
 
 #Route and function that is used to update and view the balance of a users account
 @app.route("/balance")
@@ -202,15 +206,6 @@ The home screen should use: upcoming_schedule()
 To calculate daily betting: game_today() gives list of games today then give list to betting() to have the
 same list returned with betting information for each game. The time period could be adjusted. 
 """
-@app.route('/')
-def home():
-
-    ws = WebScraper()
-    game_data = ws.upcoming_schedule()
-    game_dict = json.loads(game_data)
-    
-    return render_template("Home.html", data= game_dict)
-
 @app.route('/official-bets')
 def officialBets():
 
