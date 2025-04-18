@@ -10,6 +10,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from DUBDatabaseFiles.DynamoDBClass import DynamoTable
 from flask import get_flashed_messages
+from datetime import datetime
+from Backend.results_verification import verify_results
 
 
 DT = DynamoTable("DUBUsers")
@@ -193,6 +195,32 @@ def process_bet(bet_value, bet_list):
     DT.subtractBalanceFromTable(users[username]["account_balance"], users[username]["user_id"], bet_value)
     DT.addBetToTable(bet_list, users[username]["user_id"])
     
+    return None
+
+def refresh_status():
+    # Call the API to get the latest scores and results
+    GAME_DATABASE_RESPONSE = requests.get("NONE").json()
+    GAME_RESULTS_RESPONSE = requests.get("NONE").json()
+    
+    
+    # Check if a game is finished and update the status of the bet in the database
+    if "user" in session:
+        username = session["user"]
+    formatted_datetime = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    user_data = DT.getItemFromTable(users[username]["user_id"])
+    
+    verified_results = verify_results(user_data, GAME_DATABASE_RESPONSE, GAME_RESULTS_RESPONSE, formatted_datetime)
+    
+    #Create a loop that checks something like game_id, that we could store in the database and then also use to check the results
+    #Once we check the ID if they match up and its finished we can update the bet status to won or lost and store finished
+    
+    for i in user_data['current_bets']:
+        if i['game_id'] in verified_results:
+            total_bet = user_data[i['game_id']]
+            total_bet['verified_results'] = verified_results[i['game_id']]
+            if total_bet['verified_results']['bet_status'] == "finished":
+                DT.updateBetStatus(users[username]["user_id"], total_bet)
+        
     return None
 
 if __name__ == '__main__':

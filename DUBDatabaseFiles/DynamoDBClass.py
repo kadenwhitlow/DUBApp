@@ -19,6 +19,57 @@ class DynamoTable:
         self.table_name = table_name
         self.dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.table = self.dynamodb.Table(self.table_name)
+        
+    def updateBetStatus(self, user_id, bet):
+        self.removeBetFromTable(bet, user_id)
+        self.addBetToCompletedTable(bet, user_id)
+        
+    def removeBetFromTable(self, bet_to_remove, user_id):
+        try:
+            # Get current bets
+            response = self.table.get_item(Key={'user_id': user_id})
+            current_bets = response.get('Item', {}).get('current_bets', [])
+
+            if bet_to_remove in current_bets:
+                current_bets.remove(bet_to_remove)
+
+                # Update the table with the new list
+                self.table.update_item(
+                    Key={'user_id': user_id},
+                    UpdateExpression="SET current_bets = :updated_bets",
+                    ExpressionAttributeValues={':updated_bets': current_bets},
+                    ReturnValues="UPDATED_NEW"
+                )
+        except ClientError as err:
+            logger.error(
+                "Couldn't remove bet for player %s in table %s. Here's why: %s: %s",
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        
+        
+    def addBetToCompletedTable(self, bet, user_id):
+        try:
+            self.table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET previous_bets = list_append(if_not_exists(previous_bets, :empty_list), :new_bet)",
+                ExpressionAttributeValues={
+                    ':new_bet': [bet],  # wrap single bet in a list
+                    ':empty_list': []
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+        except ClientError as err:
+            logger.error(
+                "Couldn't update bet for player %s in table %s. Here's why: %s: %s",
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+
     
     def addBetToTable(self, bet_list, user_id):
         try:
@@ -43,6 +94,18 @@ class DynamoTable:
     
     def subtractBalanceFromTable(self, current_balance, user_id, bet_value):
         new_balance = Decimal(current_balance) - Decimal(bet_value)
+
+        response = self.table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression="SET account_balance = :new_balance",
+            ExpressionAttributeValues={':new_balance': new_balance},
+            ReturnValues="UPDATED_NEW"
+        )
+        
+        return response
+    
+    def addBalanceToTable(self, current_balance, user_id, bet_winnings):
+        new_balance = Decimal(current_balance) + Decimal(bet_winnings)
 
         response = self.table.update_item(
             Key={'user_id': user_id},
