@@ -1,29 +1,89 @@
 
-
+def spread_check(drake_score, opponent_score, bet_odds, bet_drake):
+      if bet_drake:
+        if drake_score > opponent_score:
+              if bet_odds[0] == "+":
+                    return True
+              else:
+                    if (drake_score - opponent_score) < bet_odds[1:]:
+                          return True
+                    else:
+                          return False
+        else:
+              if bet_odds[0] == "+":
+                    if (opponent_score - drake_score) < bet_odds[1:]:
+                          return True
+                    else:
+                          return False
+      else:
+        if drake_score < opponent_score:
+              if bet_odds[0] == "+":
+                    return True
+              else:
+                    if (opponent_score - drake_score) < bet_odds[1:]:
+                          return True
+                    else:
+                          return False
+        else:
+              if bet_odds[0] == "+":
+                    if (drake_score - opponent_score) < bet_odds[1:]:
+                          return True
+                    else:
+                          return False    
+            
 
 
 def bet_checker(results_data, bet_data):
+    final_result = None
+    win_amount = None
     if results_data['score'] is not None:
-          final_result = None
-          win_amount = 0
           
-          #if bet_data[results_data['game_id']]['type_of_bet'] == "moneyline":
-          #      pass
+          if bet_data['type_of_bet'] == "moneyline":
+                if bet_data['player'] == 'Drake':
+                      if results_data['winner'] == True:
+                            final_result = "win"
+                            win_amount = bet_data['bet_amount'] #More
+                      else:
+                            final_result = "loss"
+                            win_amount = 0
+                else:
+                      if results_data['winner'] == True:
+                            final_result = "loss"
+                            win_amount = 0
+                      else:
+                            final_result = "win"
+                            win_amount = bet_data['bet_amount'] #More
+          elif bet_data['type_of_bet'] == "spread":
+                if bet_data['player'] == 'Drake':
+                      if results_data['winner'] == True:
+                            spr_ch = spread_check(results_data['score'][0], results_data['score'][2], bet_data['bet_odds'], True)
+                      else:
+                            spr_ch = spread_check(results_data['score'][2], results_data['score'][0], bet_data['bet_odds'], True)
+                else:
+                      if results_data['winner'] == True:
+                            spr_ch = spread_check(results_data['score'][0], results_data['score'][2], bet_data['bet_odds'], False)
+                      else:
+                            spr_ch = spread_check(results_data['score'][2], results_data['score'][0], bet_data['bet_odds'], False)
+                
+                if spr_ch:
+                      final_result = "win"
+                      win_amount = bet_data['bet_amount']
+                else:
+                      final_result = "loss"
+                      win_amount = 0
+                      
           bet_results = {
-              "bet_status": "finished",
+              "bet_status": final_result,
               "bet_result": final_result,
-              "win_amount": win_amount,
-              
-              
+              "win_amount": win_amount,   
           }
     else:
           bet_results = {
           "bet_status": "pending",
-          "bet_result": None,
-          "win_amount": None,
-          
-          
+          "bet_result": final_result,
+          "win_amount": win_amount,
       }
+          
     return bet_results
     
 
@@ -34,6 +94,7 @@ def verify_results(user_data, game_database, results, date):
     
     for i in user_data['current_bets']:
         try:
+          #Might have to have a separate bet_id instead of game_id
             bet_ids.append(i['game_id'])
             bet_dict[i['game_id']] = i
             bet_dict[i['game_id']]["date"] = date
@@ -60,7 +121,7 @@ def verify_results(user_data, game_database, results, date):
         return "The game is not in the results"
     else:
         for game_id in results_data:
-              bet_checker(results_data[game_id], bet_dict)
+              bet_checker(results_data[game_id], bet_dict[game_id])
         
     
     

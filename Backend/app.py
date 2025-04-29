@@ -177,6 +177,7 @@ def place_bets():
             'type_of_bet': bet_type,
             'bet_prop': bet_prop,
             'bet_odds': bet_odds,
+            'bet_amount': bet_size,
             'player': player,
             'bet_status': 'pending'
         }
