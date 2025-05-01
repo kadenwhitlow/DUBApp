@@ -141,6 +141,42 @@ class DynamoTable:
                 err.response["Error"]["Message"],
             )
             raise
+    
+    def addCodesToTable(self, codes, user_id):
+        try:
+            update_expression = "SET "
+            expression_attribute_names = {}
+            expression_attribute_values = {}
+
+            for i, code in enumerate(codes):
+                code_key = f"#c{i}"
+                value_key = f":v{i}"
+
+                update_expression += f"codeMap.{code_key} = {value_key}, "
+                expression_attribute_names[code_key] = code
+                expression_attribute_values[value_key] = 0
+
+            update_expression = update_expression.rstrip(", ")
+
+            self.table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression=update_expression,
+                ExpressionAttributeNames=expression_attribute_names,
+                ExpressionAttributeValues=expression_attribute_values,
+                ReturnValues="UPDATED_NEW"
+            )
+        except ClientError as err:
+            logger.error(
+                "Couldn't add codes for user %s in table %s. Here's why: %s: %s",
+                user_id,
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+
+        
+        
         
     def returnAllTableItems(self):
         response = self.table.scan()
