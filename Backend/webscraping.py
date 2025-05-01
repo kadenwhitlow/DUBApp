@@ -62,7 +62,7 @@ class WebScraper():
                     if date_obj >= current_utc_time:
                         
                         unique_id = str(uuid.uuid4())
-                        game_data["date"] = date_obj.strftime("%B %d, %Y at %I:%M %p")
+                        game_data["date"] = date_obj.isoformat()   #strftime("%B %d, %Y at %I:%M %p")
                         game_data["opponent"] = game_information[0]
                         sport_link = x.replace("https://godrakebulldogs.com/sports/", "").replace("/schedule", "")
                         
