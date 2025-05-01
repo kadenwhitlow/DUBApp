@@ -4,22 +4,26 @@ import time
 from threading import Thread
 from datetime import datetime
 import schedule
-from DUBDatabaseFiles.DynamoDBClass import DynamoTable, RedemptionCodeTable
+from DynamoDBClass import DynamoTable
 
 class GeneratePoints:
     def __init__(self):
         self.code_table = DynamoTable("DUBStorage")
         self.user_table = DynamoTable("DUBUsers")
 
-        thread = Thread(target=self._schedule_thread, daemon=True)
-        thread.start()
-        self.refresh_codes()  
+       # thread = Thread(target=self._schedule_thread, daemon=True)
+       # thread.start()
+       # self.refresh_codes()  
 
-        schedule.every().sunday.at("00:00").do(self.refresh_codes) # weekly refresh
+       # schedule.every().sunday.at("00:00").do(self.refresh_codes) # weekly refresh
 
     def generate_code(self):
-        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        self.code_table.addCodesToTable(code, "points_codes")
+        return code
 
+    
+    """
     def refresh_codes(self):
         self.code_table.clearTable()
         point_values = [50, 40, 30, 20, 10]
@@ -34,6 +38,8 @@ class GeneratePoints:
                 })
 
     def redeem_code(self, username, code):
+        #Reads from database based on given code
+        stored_code_data = self.code_table.get_code_details(code)
         code_entry = self.code_table.getItem("code", code)
         if not code_entry or code_entry.get('used'):
             return {"error": "Invalid code"}, 400
@@ -52,3 +58,5 @@ class GeneratePoints:
         while True:
             schedule.run_pending()
             time.sleep(60)
+            
+    """
