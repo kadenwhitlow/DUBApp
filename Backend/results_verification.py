@@ -30,6 +30,19 @@ def spread_check(drake_score, opponent_score, bet_odds, bet_drake):
                           return True
                     else:
                           return False    
+                        
+                        
+def win_calculator(bet_type, bet_amount, bet_odds):
+      
+      if bet_type == "moneyline":
+            if bet_odds[0] == "+":
+                  total_win = bet_amount * (1 + (int(bet_odds[1:])/100))
+            else:
+                  total_win = bet_amount * (1 + (100/int(bet_odds)))            
+      else:
+            total_win = bet_amount * (1 + (100/-120))
+      
+      return total_win
             
 
 
@@ -42,7 +55,7 @@ def bet_checker(results_data, bet_data):
                 if bet_data['player'] == 'Drake':
                       if results_data['winner'] == True:
                             final_result = "win"
-                            win_amount = bet_data['bet_amount'] #More
+                            win_amount = win_calculator(bet_data['type_of_bet'], bet_data['bet_amount'], bet_data['bet_odds'])
                       else:
                             final_result = "loss"
                             win_amount = 0
@@ -52,7 +65,7 @@ def bet_checker(results_data, bet_data):
                             win_amount = 0
                       else:
                             final_result = "win"
-                            win_amount = bet_data['bet_amount'] #More
+                            win_amount = win_calculator(bet_data['type_of_bet'], bet_data['bet_amount'], bet_data['bet_odds'])
           elif bet_data['type_of_bet'] == "spread":
                 if bet_data['player'] == 'Drake':
                       if results_data['winner'] == True:
@@ -67,7 +80,7 @@ def bet_checker(results_data, bet_data):
                 
                 if spr_ch:
                       final_result = "win"
-                      win_amount = bet_data['bet_amount']
+                      win_amount = win_calculator(bet_data['type_of_bet'], bet_data['bet_amount'], bet_data['bet_odds'])
                 else:
                       final_result = "loss"
                       win_amount = 0
@@ -102,8 +115,6 @@ def verify_results(user_data, game_database, results, date):
             bet_dict[i['game_id']]["sport"] = game_database[date][i['game_id']]['sport']
         except:
             pass
-        
-    print(bet_dict)
     
     #get the id that was stored in the user bet database
     #check the list of games for the day, and match up the id with the one for our bet
@@ -116,17 +127,18 @@ def verify_results(user_data, game_database, results, date):
         for m in bet_ids:
             if (i['sport'] == bet_dict[m]['sport']) and (i['opponent'] == bet_dict[m]['opponent']):
                 results_data[m] = i
-    print(results_data)
     if results_data is {}:
         return "The game is not in the results"
     else:
+        verified_results = {}
         for game_id in results_data:
-              bet_checker(results_data[game_id], bet_dict[game_id])
+              verified_results[game_id] = bet_checker(results_data[game_id], bet_dict[game_id])
+    return verified_results
         
     
-    
-    
 
+#Testing/Debugging Data   
+"""
     
 dummy_data = {
     "user_data": {
@@ -139,6 +151,7 @@ dummy_data = {
             "bet_value": 10,
             "player": "Drake",
             "type_of_bet": "moneyline",
+            "bet_amount": 10,
             "game_id": "8a0cde7a-991f-4ab9-8398-fb98b5991d03"
             }, 
             {
@@ -148,6 +161,7 @@ dummy_data = {
             "bet_value": 5,
             "player": "Drake",
             "type_of_bet": "spread",
+            "bet_amount": 5,
             "game_id": "caabecf3-186b-4d75-bd91-185ed7c2d0ad"
             }
             ],
@@ -300,3 +314,5 @@ dummy_data = {
     "date": "2025-04-05T14:00:00"
 }
 verify_results(dummy_data['user_data'], dummy_data['game_database'], dummy_data['results'], dummy_data['date'])
+
+"""

@@ -147,22 +147,24 @@ class DynamoTable:
         return response.get("Items", [])
         
     def getItemFromTable(self, key_value):
+            key = {
+                "user_id": key_value  # Corrected key format for DynamoDB
+            }
 
-        key = {
-            "user_id": {"S": f'{key_value}'}
-        }
+            try:
+                # Use self.table.get_item instead of self.dynamodb.get_item
+                response = self.table.get_item(Key=key)
+                item = response.get("Item")
 
-        try:
-            response = self.dynamodb.get_item(TableName=self.table_name, Key=key)
-            
-            item = response.get("Item")
-            
-            if item:
-                print("Retrieved item:")
-                print(item)
-            else:
-                print("Item not found.")
+                if item:
+                    print("Retrieved item:")
+                    return item
+                else:
+                    print("Item not found.")
 
-        except self.dynamodb.exceptions.ResourceNotFoundException:
-            print(f"Table '{self.table_name}' not found.")
+            except ClientError as err:
+                if err.response["Error"]["Code"] == "ResourceNotFoundException":
+                    print(f"Table '{self.table_name}' not found.")
+                else:
+                    print(f"An error occurred: {err.response['Error']['Message']}")
             
