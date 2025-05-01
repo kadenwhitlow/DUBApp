@@ -19,6 +19,57 @@ class DynamoTable:
         self.table_name = table_name
         self.dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.table = self.dynamodb.Table(self.table_name)
+        
+    def updateBetStatus(self, user_id, bet):
+        self.removeBetFromTable(bet, user_id)
+        self.addBetToCompletedTable(bet, user_id)
+        
+    def removeBetFromTable(self, bet_to_remove, user_id):
+        try:
+            # Get current bets
+            response = self.table.get_item(Key={'user_id': user_id})
+            current_bets = response.get('Item', {}).get('current_bets', [])
+
+            if bet_to_remove in current_bets:
+                current_bets.remove(bet_to_remove)
+
+                # Update the table with the new list
+                self.table.update_item(
+                    Key={'user_id': user_id},
+                    UpdateExpression="SET current_bets = :updated_bets",
+                    ExpressionAttributeValues={':updated_bets': current_bets},
+                    ReturnValues="UPDATED_NEW"
+                )
+        except ClientError as err:
+            logger.error(
+                "Couldn't remove bet for player %s in table %s. Here's why: %s: %s",
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        
+        
+    def addBetToCompletedTable(self, bet, user_id):
+        try:
+            self.table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET previous_bets = list_append(if_not_exists(previous_bets, :empty_list), :new_bet)",
+                ExpressionAttributeValues={
+                    ':new_bet': [bet],  # wrap single bet in a list
+                    ':empty_list': []
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+        except ClientError as err:
+            logger.error(
+                "Couldn't update bet for player %s in table %s. Here's why: %s: %s",
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+
     
     def addBetToTable(self, bet_list, user_id):
         try:
@@ -43,6 +94,18 @@ class DynamoTable:
     
     def subtractBalanceFromTable(self, current_balance, user_id, bet_value):
         new_balance = Decimal(current_balance) - Decimal(bet_value)
+
+        response = self.table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression="SET account_balance = :new_balance",
+            ExpressionAttributeValues={':new_balance': new_balance},
+            ReturnValues="UPDATED_NEW"
+        )
+        
+        return response
+    
+    def addBalanceToTable(self, current_balance, user_id, bet_winnings):
+        new_balance = Decimal(current_balance) + Decimal(bet_winnings)
 
         response = self.table.update_item(
             Key={'user_id': user_id},
@@ -79,27 +142,61 @@ class DynamoTable:
             )
             raise
         
+    def addCodesToTable(self, code, user_id):
+        try:
+            self.table.update_item(
+                Key={'feature_id': 'points_codes'},  # <-- updated
+                UpdateExpression=f"SET codes.#code = :code_val",
+                ExpressionAttributeNames={"#code": code},
+                ExpressionAttributeValues={":code_val": {"points": 50, "used": False}},  # example value
+            )
+
+            print(f"Successfully added code: {code}")
+        except ClientError as e:
+            print(f"Couldn't add code {code}: {e}")
+
+    def get_code_details(self, code):
+        # Read the item with feature_id = "points_codes"
+        item = self.code_table.getItem("feature_id", "points_codes")
+
+        if not item:
+            return {"error": "points_codes entry not found."}, 404
+
+        codes_dict = item.get("codes", {})
+
+        # Check if the code exists
+        if code in codes_dict:
+            return {"code": code, "details": codes_dict[code]}, 200
+        else:
+            return {"error": "Code not found."}, 404
+
+
+        
+        
+        
     def returnAllTableItems(self):
         response = self.table.scan()
         return response.get("Items", [])
         
     def getItemFromTable(self, key_value):
+            key = {
+                "user_id": key_value  # Corrected key format for DynamoDB
+            }
 
-        key = {
-            "user_id": {"S": f'{key_value}'}
-        }
+            try:
+                # Use self.table.get_item instead of self.dynamodb.get_item
+                response = self.table.get_item(Key=key)
+                item = response.get("Item")
 
-        try:
-            response = self.dynamodb.get_item(TableName=self.table_name, Key=key)
-            
-            item = response.get("Item")
-            
-            if item:
-                print("Retrieved item:")
-                print(item)
-            else:
-                print("Item not found.")
+                if item:
+                    print("Retrieved item:")
+                    return item
+                else:
+                    print("Item not found.")
 
-        except self.dynamodb.exceptions.ResourceNotFoundException:
-            print(f"Table '{self.table_name}' not found.")
+            except ClientError as err:
+                if err.response["Error"]["Code"] == "ResourceNotFoundException":
+                    print(f"Table '{self.table_name}' not found.")
+                else:
+                    print(f"An error occurred: {err.response['Error']['Message']}")
             
