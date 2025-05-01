@@ -214,6 +214,17 @@ def officialBets():
     
     return render_template("official_bets.html", data = game_data)
 
+@app.route('/my-bets')
+def myBets():
+    
+    if "user" in session:
+        username = session["user"]
+    
+    user_data = DT.getItemFromTable(users[username]["user_id"])
+    
+    #the database just gave back filler data
+    return render_template("My_Bets.html", data = user_data["current_bets"][1])
+
 ##########################################################################################################
 if __name__ == '__main__':
     app.run(debug=True)
