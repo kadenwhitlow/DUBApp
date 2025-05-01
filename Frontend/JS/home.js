@@ -60,8 +60,8 @@ function placeBet() {
 // -----------------------------------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Get all bet buttons
-    const betButtons = document.querySelectorAll(".bet button");
+    // Get only the buttons that actually add a bet to the cart
+    const betButtons = document.querySelectorAll(".bet button.add-to-cart");
     const cart = [];
     const betSizeInput = document.getElementById("bet-size"); // Get the input for bet size
 
@@ -84,14 +84,14 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
     document.body.appendChild(modal);
 
-    const betList = document.getElementById("bet-list");
+    const betListEl = document.getElementById("bet-list");
     const closeModal = modal.querySelector(".close");
     const clearBets = modal.querySelector("#clear-bets");
     const placeBets = modal.querySelector("#place-bets");
     const placeParlay = modal.querySelector("#place-parlay");
 
     function updateCart() {
-        betList.innerHTML = "";
+        betListEl.innerHTML = "";
         cart.forEach((bet, index) => {
             const li = document.createElement("li");
             li.textContent = `${bet.betValue} - ${bet.typeOfBet} - ${bet.player} - ${bet.type}`;
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
             removeButton.dataset.index = index; // Store index for removal
 
             li.appendChild(removeButton);
-            betList.appendChild(li);
+            betListEl.appendChild(li);
         });
 
         // Attach event listeners to remove buttons
@@ -174,15 +174,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Gather the bet details for the parlay
-        const betList = Array.from(document.querySelectorAll("#bet-list li")).map(li => {
+        const betListData = Array.from(document.querySelectorAll("#bet-list li")).map(li => {
             return li.childNodes[0].textContent.trim(); // Get only the actual bet text
         });
 
         console.log("Placing parlay with size: " + betSize);
-        console.log("Parlay bets:", betList);
+        console.log("Parlay bets:", betListData);
 
         // Here, you'd need to handle the parlay bet placing logic
-        // For example, you might send this to the server to calculate parlay odds
 
         // Clear the cart after placing parlay
         cart.length = 0;
@@ -202,8 +201,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // -----------------------------------------------------------------------------------------------------
 
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
+/* When the user clicks on the menu button,
+   toggle between hiding and showing the dropdown content */
 function toggleMenu() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
@@ -212,8 +211,7 @@ function toggleMenu() {
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
+        for (var i = 0; i < dropdowns.length; i++) {
             var openDropdown = dropdowns[i];
             if (openDropdown.classList.contains('show')) {
                 openDropdown.classList.remove('show');
@@ -243,7 +241,6 @@ updateBalance();  // Call once immediately on page load
 
 
 
-
 //--------------------------------------------------------------------------------------------------------
 
 // Update and add cards to Official bets page
@@ -253,8 +250,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const betContainer = document.getElementById("bet-container");
     const popularBetsContainer = document.getElementById("popular-bets-container");
 
-
-    
     async function fetchBets() {
         try {
             const response = await fetch("database"); 
@@ -326,6 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
         bets.forEach(bet => {
             const button = document.createElement("button");
             button.textContent = bet;
+            button.classList.add("add-to-cart");
             button.style.cssText = "background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 5px; font-size: 14px;";
             betButtonsDiv.appendChild(button);
         });
@@ -340,6 +336,5 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch bets initially and update every 30 seconds
     fetchBets();
     setInterval(fetchBets, 30000); // Update every 30 seconds
-
 
 });
