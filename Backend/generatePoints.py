@@ -8,7 +8,7 @@ from DUBDatabaseFiles.DynamoDBClass import DynamoTable, RedemptionCodeTable
 
 class GeneratePoints:
     def __init__(self):
-        self.code_table = DynamoTable("DUBRedemptionCodes")
+        self.code_table = DynamoTable("DUBStorage")
         self.user_table = DynamoTable("DUBUsers")
 
         thread = Thread(target=self._schedule_thread, daemon=True)
