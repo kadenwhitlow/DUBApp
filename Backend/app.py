@@ -10,7 +10,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from DUBDatabaseFiles.DynamoDBClass import DynamoTable
 from generatePoints import GeneratePoints
-
+from topBets import TopBets
 
 
 DT = DynamoTable("DUBUsers")
@@ -141,7 +141,9 @@ def home():
     game_data = ws.upcoming_schedule()
     game_dict = json.loads(game_data)
     
-    return render_template("home.html", user=user_data, data=game_dict)
+    top_bets_obj = TopBets(DT)
+    popular_bets = top_bets_obj.get_top_bets()
+    return render_template("home.html", user=user_data, data=game_dict, popular_bets=popular_bets)
 
 #Route and function that is used to update and view the balance of a users account
 @app.route("/balance")
