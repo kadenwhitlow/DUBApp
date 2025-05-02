@@ -19,6 +19,89 @@ class DynamoTable:
         self.table_name = table_name
         self.dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.table = self.dynamodb.Table(self.table_name)
+        
+    from decimal import Decimal
+
+    def convert_floats_to_decimal(self, obj):
+        if isinstance(obj, list):
+            return [self.convert_floats_to_decimal(i) for i in obj]
+        elif isinstance(obj, dict):
+            return {k: self.convert_floats_to_decimal(v) for k, v in obj.items()}
+        elif isinstance(obj, float):
+            return Decimal(str(obj))  # Use str to avoid floating point issues
+        else:
+            return obj
+
+
+    def updateBetStatus(self, user_id, bet, user_balance):
+        self.removeBetFromTable(bet, user_id)
+        self.addBetToCompletedTable(bet, user_id)
+
+        # Ensure win_amount is a Decimal before adding
+        win_amount = bet['verified_results'].get('win_amount', 0)
+        if isinstance(win_amount, float):
+            win_amount = Decimal(str(win_amount))
+        elif isinstance(win_amount, int):
+            win_amount = Decimal(win_amount)
+
+        # Ensure user_balance is a Decimal too
+        if isinstance(user_balance, float):
+            user_balance = Decimal(str(user_balance))
+        elif isinstance(user_balance, int):
+            user_balance = Decimal(user_balance)
+
+        self.addBalanceToTable(user_balance, user_id, win_amount)
+
+        
+    def removeBetFromTable(self, bet_to_remove, user_id):
+        try:
+            # Get current bets
+            response = self.table.get_item(Key={'user_id': user_id})
+            current_bets = response.get('Item', {}).get('current_bets', [])
+
+            if bet_to_remove in current_bets:
+                current_bets.remove(bet_to_remove)
+
+                # Update the table with the new list
+                self.table.update_item(
+                    Key={'user_id': user_id},
+                    UpdateExpression="SET current_bets = :updated_bets",
+                    ExpressionAttributeValues={':updated_bets': current_bets},
+                    ReturnValues="UPDATED_NEW"
+                )
+        except ClientError as err:
+            logger.error(
+                "Couldn't remove bet for player %s in table %s. Here's why: %s: %s",
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        
+        
+    def addBetToCompletedTable(self, bet, user_id):
+        try:
+            bet = self.convert_floats_to_decimal(bet)  # 🔥 Fix is here
+
+            self.table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET previous_bets = list_append(if_not_exists(previous_bets, :empty_list), :new_bet)",
+                ExpressionAttributeValues={
+                    ':new_bet': [bet],
+                    ':empty_list': []
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+        except ClientError as err:
+            logger.error(
+                "Couldn't add bet to completed for player %s in table %s. Here's why: %s: %s",
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+
+
     
     def addBetToTable(self, bet_list, user_id):
         try:
@@ -43,6 +126,18 @@ class DynamoTable:
     
     def subtractBalanceFromTable(self, current_balance, user_id, bet_value):
         new_balance = Decimal(current_balance) - Decimal(bet_value)
+
+        response = self.table.update_item(
+            Key={'user_id': user_id},
+            UpdateExpression="SET account_balance = :new_balance",
+            ExpressionAttributeValues={':new_balance': new_balance},
+            ReturnValues="UPDATED_NEW"
+        )
+        
+        return response
+    
+    def addBalanceToTable(self, current_balance, user_id, bet_winnings):
+        new_balance = Decimal(current_balance) + Decimal(bet_winnings)
 
         response = self.table.update_item(
             Key={'user_id': user_id},
@@ -78,28 +173,99 @@ class DynamoTable:
                 err.response["Error"]["Message"],
             )
             raise
+    
+    def addCodesToTable(self, codes, user_id):
+        try:
+            update_expression = "SET "
+            expression_attribute_names = {}
+            expression_attribute_values = {}
+
+            for i, code in enumerate(codes):
+                code_key = f"#c{i}"
+                value_key = f":v{i}"
+
+                update_expression += f"codeMap.{code_key} = {value_key}, "
+                expression_attribute_names[code_key] = code
+                expression_attribute_values[value_key] = 0
+
+            update_expression = update_expression.rstrip(", ")
+
+            self.table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression=update_expression,
+                ExpressionAttributeNames=expression_attribute_names,
+                ExpressionAttributeValues=expression_attribute_values,
+                ReturnValues="UPDATED_NEW"
+            )
+        except ClientError as err:
+            logger.error(
+                "Couldn't add codes for user %s in table %s. Here's why: %s: %s",
+                user_id,
+                self.table.name,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+
+        
+        
+        
+    def addCodesToTable(self, code, user_id):
+        try:
+            self.table.update_item(
+                Key={'feature_id': 'points_codes'},  # <-- updated
+                UpdateExpression=f"SET codes.#code = :code_val",
+                ExpressionAttributeNames={"#code": code},
+                ExpressionAttributeValues={":code_val": {"points": 50, "used": False}},  # example value
+            )
+
+            print(f"Successfully added code: {code}")
+        except ClientError as e:
+            print(f"Couldn't add code {code}: {e}")
+
+    def get_code_details(self, code):
+        # Read the item with feature_id = "points_codes"
+        item = self.code_table.getItem("feature_id", "points_codes")
+
+        if not item:
+            return {"error": "points_codes entry not found."}, 404
+
+        codes_dict = item.get("codes", {})
+
+        # Check if the code exists
+        if code in codes_dict:
+            return {"code": code, "details": codes_dict[code]}, 200
+        else:
+            return {"error": "Code not found."}, 404
+
+
+        
+        
         
     def returnAllTableItems(self):
         response = self.table.scan()
         return response.get("Items", [])
         
     def getItemFromTable(self, key_value):
+            key = {
+                "user_id": key_value  # Corrected key format for DynamoDB
+            }
 
-        key = {
-            "user_id": {"S": f'{key_value}'}
-        }
 
-        try:
-            response = self.dynamodb.get_item(TableName=self.table_name, Key=key)
-            
-            item = response.get("Item")
-            
-            if item:
-                print("Retrieved item:")
-                print(item)
-            else:
-                print("Item not found.")
+            try:
+                # Use self.table.get_item instead of self.dynamodb.get_item
+                response = self.table.get_item(Key=key)
+                item = response.get("Item")
 
-        except self.dynamodb.exceptions.ResourceNotFoundException:
-            print(f"Table '{self.table_name}' not found.")
+                if item:
+                    print("Retrieved item:")
+                    return item
+                else:
+                    print("Item not found.")
+
+            except ClientError as err:
+                if err.response["Error"]["Code"] == "ResourceNotFoundException":
+                    print(f"Table '{self.table_name}' not found.")
+                else:
+                    print(f"An error occurred: {err.response['Error']['Message']}")
             
