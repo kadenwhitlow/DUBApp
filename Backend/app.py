@@ -10,9 +10,15 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from DUBDatabaseFiles.DynamoDBClass import DynamoTable
 from generatePoints import GeneratePoints
-from topBets import TopBets
+#from topBets import TopBets
 
 
+from flask import get_flashed_messages
+from datetime import datetime
+from Backend.results_verification import verify_results
+
+from datetime import datetime, timezone
+from webscraping import WebScraper
 
 DT = DynamoTable("DUBUsers")
 point_dist = GeneratePoints()
@@ -180,14 +186,16 @@ def place_bets():
         bet_prop = cleaned_bet_details[1]
         player = cleaned_bet_details[2]
         bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
-        {
+        bet_dict = {
             'bet_value': bet_value,
             'type_of_bet': bet_type,
             'bet_prop': bet_prop,
             'bet_odds': bet_odds,
+            'bet_amount': bet_size,
             'player': player,
+            'bet_status': 'pending'
         }
-        bets_split.append(cleaned_bet_details)
+        bets_split.append(bet_dict)
 
     print("Placing bet....")
     print(f"PARLAY: {bets_split}")
@@ -198,23 +206,47 @@ def place_bets():
 def process_bet(bet_value, bet_list):
     if "user" in session:
         username = session["user"]
-    print(users[username])
     DT.subtractBalanceFromTable(users[username]["account_balance"], users[username]["user_id"], bet_value)
     DT.addBetToTable(bet_list, users[username]["user_id"])
     
     return None
 
-@app.route('/redeem', methods=['POST'])
-def redeem_code():
-    if "user" not in session:
-        return jsonify({"error": "Log-in Required"}), 403
+def refresh_status():
+    # Call the API to get the latest scores and results
+    GAME_DATABASE_RESPONSE = None #requests.get("NONE").json()
+    GAME_RESULTS_RESPONSE = None #requests.get("NONE").json()
+    
+    
+    # Check if a game is finished and update the status of the bet in the database
+    if "user" in session:
+        username = session["user"]
+    else:
+        return None  # No user logged in
 
-    username = session["user"]
-    code = request.json.get("code")
-    result, status = point_dist.redeem_code(username, code)
-    return jsonify(result), status
+    formatted_datetime = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    user_data = DT.getItemFromTable(users[username]["user_id"])
 
-=======
+    verified_results = verify_results(user_data, GAME_DATABASE_RESPONSE, GAME_RESULTS_RESPONSE, formatted_datetime)
+    print("Verified Results:", verified_results)
+
+    updated_bets = []
+    for bet_group in user_data['current_bets']:
+        for bet in bet_group:
+            game_id = bet.get('game_id')
+            if game_id in verified_results:
+                bet['verified_results'] = verified_results[game_id]
+                print("Updating Bet:", bet)
+                if bet['verified_results']['bet_status'] in ["win", "loss"]:
+                    updated_bets.append(bet)
+
+    for bet in updated_bets:
+
+        DT.updateBetStatus(users[username]['user_id'], bet, user_data['account_balance'])
+        
+    return None
+
+##########################################################################################################
+
 #API and Webscraping
 """
 The home screen should use: upcoming_schedule()
