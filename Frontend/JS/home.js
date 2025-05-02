@@ -58,6 +58,7 @@ function placeBet() {
 }
 
 // -----------------------------------------------------------------------------------------------------
+// This function adds functionality to the bet buttons on the official bets page
 
 document.addEventListener("DOMContentLoaded", function () {
     // Get all bet buttons
@@ -228,6 +229,7 @@ window.onclick = function(event) {
     }
 }
 
+
 // -----------------------------------------------------------------------------------------------------
 
 // Update the balance values dynamically with our AWS database call
@@ -248,10 +250,13 @@ updateBalance();  // Call once immediately on page load
 
 // Update and add cards to Official bets page
 
+
 document.addEventListener("DOMContentLoaded", () => {
     const betContainer = document.getElementById("bet-container");
     const popularBetsContainer = document.getElementById("popular-bets-container");
 
+
+    
     async function fetchBets() {
         try {
             const response = await fetch("database"); 
@@ -337,4 +342,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch bets initially and update every 30 seconds
     fetchBets();
     setInterval(fetchBets, 30000); // Update every 30 seconds
+
+
 });
