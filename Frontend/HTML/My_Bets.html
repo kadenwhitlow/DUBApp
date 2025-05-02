@@ -34,25 +34,50 @@
 
         <!-- Search Bar -->
         <input style="padding: 8px; border-radius: 5px; border: none; margin: 5px; width: 80%;" type="text" placeholder="Search Official/Unofficial Bets">
+        <button onclick ="sortState()" style="padding: 8px 12px; margin: 2px;">Sort</button>
 
+        <div id="bets-container">
+        {% for i in data  %}
         <!-- Bets List -->
-        <div class="bet" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #ddd;">
+        <div class="bet"
+            data-status="{{ i['bet_status'] }}"
+            data-player="{{ i['player'] }}"
+            data-odds="{{ i['bet_odds'] }}"
+            style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #ddd;">
+
             <img src="/Frontend/Images/basketball.png" alt="Bet" style="width: 60px; height: 60px; border-radius: 50%;">
             <div class="bet-info" style="flex-grow: 1; text-align: center;">
-                <p>Bet on Drake vs Illinois State</p>
-                <p>Odds: 1.5 | Time Left: 2h 15m</p>
+                <p>Drake vs OPPONENT</p>
+                <p>Odds: BET INFORMATION | Time Left: DATE OF BET</p>
+                <p> #{{ i["bet_status"]}} </p>
             </div>
+            <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 5px; cursor: pointer; border-radius: 5px; font-size: 14px;">More Info</button>
         </div>
 
-        <!-- Additional Bets Placeholder -->
-        <div class="bet" style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #ddd;">
-            <img src="/Frontend/Images/basketball.png" alt="Bet" style="width: 60px; height: 60px; border-radius: 50%;">
-            <div class="bet-info" style="flex-grow: 1; text-align: center;">
-                <p>Parlay Bet: Multiple Games</p>
-                <p>Odds: 3.2 | Time Left: 4h 30m</p>
-            </div>
+        {% endfor  %}
         </div>
     </div>
+
+
+    <script>
+        function sortState() {
+            const container = document.getElementById('bets-container');
+            const bets = Array.from(container.querySelectorAll('.bet'));
+        
+            bets.sort((a, b) => {
+                const statusA = a.dataset.status.toLowerCase();
+                const statusB = b.dataset.status.toLowerCase();
+        
+                if (statusA === statusB) return 0;
+                if (statusA === 'pending') return -1;
+                if (statusB === 'pending') return 1;
+                return statusA.localeCompare(statusB);
+            });
+        
+            bets.forEach(bet => container.appendChild(bet)); 
+        }
+    </script>
+           
 
 </body>
 </html>
