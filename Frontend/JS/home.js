@@ -63,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Get all bet buttons
     const betButtons = document.querySelectorAll(".bet button");
     const cart = [];
-    const betSizeInput = document.getElementById("bet-size"); // Get the input for bet size
     let selectedBet = null; // Temporary storage for the selected bet
 
     // Create modal elements
@@ -85,6 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
     document.body.appendChild(modal);
 
+    const betSizeInput = document.getElementById("bet-size"); // Get the input for bet size
     const betList = document.getElementById("bet-list");
     const closeModal = modal.querySelector(".close");
     const clearBets = modal.querySelector("#clear-bets");
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
             updateCart();
 
             // Clear the temporary selected bet
-            selectedBet = null;
+           // selectedBet = null;
 
             // Optionally, close the modal after placing bets
             modal.style.display = "none";
