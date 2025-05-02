@@ -6,7 +6,9 @@
     <title>DUB - Home</title>
 
     <!-- Link CSS -->
-    <link rel="stylesheet" href="/Frontend/CSS/home.css">
+    <!--<link rel="stylesheet" href="/Frontend/CSS/home.css">-->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='CSS/home.css') }}">
+
     
     <!-- Link JS -->
     <script src="/Frontend/JS/home.js" defer></script>
@@ -18,7 +20,7 @@
         <div class="dropdown">
             <button onclick="toggleMenu()" class="dropbtn">Menu</button>
             <div id="myDropdown" class="dropdown-content">
-                <a href="/Frontend/HTML/official_bets.html">Official Bets</a>
+                <a href="/official-bets">Official Bets</a>
                 <a href="/Frontend/HTML/My_Bets.html">My Bets</a>
                 <a href="/Frontend/HTML/getpoints.html">Earn Points</a>
               </div>
@@ -34,11 +36,14 @@
     <div class="content">
         <h2>LIVE/UPCOMING EVENTS</h2>
         <div class="events">
-            <p><strong>WBB - February 7 • 6 PM</strong> <br> Drake vs Illinois State</p>
-            <p><strong>WTEN - February 7 • 6 PM</strong> <br> Drake vs DePaul</p>
-            <p><strong>TRACK - February 8</strong> <br> Drake at Iowa State Classic</p>
-            <p><strong>SB - February 8 • 11:30 AM</strong> <br> Drake at Omaha</p>
-            <p><strong>WTEN - February 8 • 1 PM</strong> <br> Drake vs Creighton</p>
+            {% for i in data.keys() %}
+                {% for x in data[i].values() %}
+
+                <p><strong>{{ x["sport"] }} - {{ x["date"] }}</strong> <br> Drake vs {{ x["opponent"] }}</p>
+                
+                {% endfor %}
+            {% endfor %}
+            
         </div>
     </div>
 
