@@ -192,7 +192,6 @@ def place_bets():
 def process_bet(bet_value, bet_list):
     if "user" in session:
         username = session["user"]
-    print(users[username])
     DT.subtractBalanceFromTable(users[username]["account_balance"], users[username]["user_id"], bet_value)
     DT.addBetToTable(bet_list, users[username]["user_id"])
     
