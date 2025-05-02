@@ -50,7 +50,13 @@
     <!-- Top Bets -->
     <div class="content" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 80%; margin: 20px auto; max-width: 600px;">
         <h2>Most Popular Bets</h2>
-        <div id="popular-bets-container"></div>
+        <ul id="popular-bets-container">
+            {% for bet, count in popular_bets.items() %}
+                <li><strong>{{ bet }}</strong> – {{ count }} users</li>
+            {% else %}
+                <li>No bets placed yet.</li>
+            {% endfor %}
+        </ul>
     </div>
 
 </body>
