@@ -270,7 +270,7 @@ def myBets():
     user_data = DT.getItemFromTable(users[username]["user_id"])
     
     #the database just gave back filler data
-    return render_template("My_Bets.html", data = user_data["current_bets"][1])
+    return render_template("My_Bets.html", data = user_data["current_bets"][0])
 
 if __name__ == '__main__':
     app.run(debug=True)
