@@ -58,12 +58,13 @@ function placeBet() {
 }
 
 // -----------------------------------------------------------------------------------------------------
+// This function adds functionality to the bet buttons on the official bets page
 
 document.addEventListener("DOMContentLoaded", function () {
     // Get all bet buttons
     const betButtons = document.querySelectorAll(".bet button");
     const cart = [];
-    const betSizeInput = document.getElementById("bet-size"); // Get the input for bet size
+    let selectedBet = null; // Temporary storage for the selected bet
 
     // Create modal elements
     const modal = document.createElement("div");
@@ -78,12 +79,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 <input type="number" id="bet-size" placeholder="Enter amount" />
             </div>
             <button id="clear-bets">Clear Bets</button>
-            <button onclick="placeBet()" id="place-bets">Place Bets</button>
+            <button id="place-bets">Place Bets</button>
             <button onclick="placeParlay()" id="place-parlay">Place Parlay</button>
         </div>
     `;
     document.body.appendChild(modal);
 
+    const betSizeInput = document.getElementById("bet-size"); // Get the input for bet size
     const betList = document.getElementById("bet-list");
     const closeModal = modal.querySelector(".close");
     const clearBets = modal.querySelector("#clear-bets");
@@ -117,18 +119,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Event listener for bet buttons
-    betButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            const betType = this.textContent;
-            const player = this.closest(".bet").querySelector("p").textContent;
-            const betDetails = this.closest(".bet").querySelector(".bet-info").querySelectorAll("p")[1].textContent;
-            const bet_details_split = betDetails.split(" ");
-
-            // Add to cart
-            cart.push({ player, type: betType, typeOfBet: bet_details_split[1], betValue: bet_details_split[0] });
-            updateCart();
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("bet-button")) {
+            const betType = event.target.textContent;
+            const betCard = event.target.closest(".bet-card");
+            const player = betCard.querySelector("div > div").textContent.trim(); // Extract player info
+            const betDetails = betType.split(" "); // Split bet details (e.g., "Spread 5.5")
+    
+            // Store the selected bet temporarily
+            selectedBet = { player, type: betType, typeOfBet: betDetails[1], betValue: null };
+    
             modal.style.display = "block"; // Show modal
-        });
+        }
     });
 
     // Close modal
@@ -152,15 +154,20 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Handle placing the bet (e.g., sending the bets to the server, updating balance, etc.)
-        console.log("Placing bets with size: " + betSize);
+        if (selectedBet) {
+            // Add the selected bet to the cart with the entered bet size
+            selectedBet.betValue = betSize; // Update the bet value with the entered amount
+            cart.push(selectedBet);
+            updateCart();
 
-        // Clear the cart after placing bets
-        cart.length = 0;
-        updateCart();
+            // Clear the temporary selected bet
+           // selectedBet = null;
 
-        // Optionally, close the modal after placing bets
-        modal.style.display = "none";
+            // Optionally, close the modal after placing bets
+            modal.style.display = "none";
+        } else {
+            alert("No bet selected.");
+        }
     });
 
     // Place parlay bet
@@ -238,11 +245,6 @@ function updateBalance() {
 
 //setInterval(updateBalance, 120000);  // Refresh balance every 5 seconds
 updateBalance();  // Call once immediately on page load
-
-
-
-
-
 
 //--------------------------------------------------------------------------------------------------------
 

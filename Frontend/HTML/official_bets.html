@@ -42,10 +42,10 @@
                 <div style="font-size: 18px; font-weight: bold;">Drake vs. {{ i["opponent"] }}</div>
             </div>
             <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-                <button style="padding: 8px 12px; background-color: #1E3A66; color: white; border: none; border-radius: 5px;">Spread {{ i["betting"]["spread"] }}</button>
-                <button style="padding: 8px 12px; background-color: #1E3A66; color: white; border: none; border-radius: 5px;">Ov {{ i["betting"]["overUnder"] }}</button>
-                <button style="padding: 8px 12px; background-color: #1E3A66; color: white; border: none; border-radius: 5px;">Home ML {{ i["betting"]["ml"]["home_ml"] }}</button>
-                <button style="padding: 8px 12px; background-color: #1E3A66; color: white; border: none; border-radius: 5px;">Away ML {{ i["betting"]["ml"]["away_ml"] }}</button>
+                <button class ="bet-button" style="padding: 8px 12px; background-color: #1E3A66; color: white; border: none; border-radius: 5px;">Spread {{ i["betting"]["spread"] }}</button>
+                <button class ="bet-button" style="padding: 8px 12px; background-color: #1E3A66; color: white; border: none; border-radius: 5px;">Ov {{ i["betting"]["overUnder"] }}</button>
+                <button class ="bet-button" style="padding: 8px 12px; background-color: #1E3A66; color: white; border: none; border-radius: 5px;">Home ML {{ i["betting"]["ml"]["home_ml"] }}</button>
+                <button class ="bet-button" style="padding: 8px 12px; background-color: #1E3A66; color: white; border: none; border-radius: 5px;">Away ML {{ i["betting"]["ml"]["away_ml"] }}</button>
             </div>
         </div>
         {% endfor %}
