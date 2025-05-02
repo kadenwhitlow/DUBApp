@@ -210,6 +210,38 @@ class DynamoTable:
         
         
         
+    def addCodesToTable(self, code, user_id):
+        try:
+            self.table.update_item(
+                Key={'feature_id': 'points_codes'},  # <-- updated
+                UpdateExpression=f"SET codes.#code = :code_val",
+                ExpressionAttributeNames={"#code": code},
+                ExpressionAttributeValues={":code_val": {"points": 50, "used": False}},  # example value
+            )
+
+            print(f"Successfully added code: {code}")
+        except ClientError as e:
+            print(f"Couldn't add code {code}: {e}")
+
+    def get_code_details(self, code):
+        # Read the item with feature_id = "points_codes"
+        item = self.code_table.getItem("feature_id", "points_codes")
+
+        if not item:
+            return {"error": "points_codes entry not found."}, 404
+
+        codes_dict = item.get("codes", {})
+
+        # Check if the code exists
+        if code in codes_dict:
+            return {"code": code, "details": codes_dict[code]}, 200
+        else:
+            return {"error": "Code not found."}, 404
+
+
+        
+        
+        
     def returnAllTableItems(self):
         response = self.table.scan()
         return response.get("Items", [])
@@ -218,6 +250,7 @@ class DynamoTable:
             key = {
                 "user_id": key_value  # Corrected key format for DynamoDB
             }
+
 
             try:
                 # Use self.table.get_item instead of self.dynamodb.get_item

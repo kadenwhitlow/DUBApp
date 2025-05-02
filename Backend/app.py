@@ -3,11 +3,16 @@ from flask_restful import Resource, Api
 import requests
 import json
 from functools import wraps
+import datetime
 import sys
 import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 from DUBDatabaseFiles.DynamoDBClass import DynamoTable
+from generatePoints import GeneratePoints
+#from topBets import TopBets
+
+
 from flask import get_flashed_messages
 from datetime import datetime
 from Backend.results_verification import verify_results
@@ -16,6 +21,8 @@ from datetime import datetime, timezone
 from webscraping import WebScraper
 
 DT = DynamoTable("DUBUsers")
+point_dist = GeneratePoints()
+
 
 app = Flask(__name__, template_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend/HTML', static_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend')
 app.secret_key = 'test'
@@ -141,7 +148,9 @@ def home():
     game_data = ws.upcoming_schedule()
     game_dict = json.loads(game_data)
     
-    return render_template("home.html", user=user_data, data=game_dict)
+    top_bets_obj = TopBets(DT)
+    popular_bets = top_bets_obj.get_top_bets()
+    return render_template("home.html", user=user_data, data=game_dict, popular_bets=popular_bets)
 
 #Route and function that is used to update and view the balance of a users account
 @app.route("/balance")
@@ -263,6 +272,5 @@ def myBets():
     #the database just gave back filler data
     return render_template("My_Bets.html", data = user_data["current_bets"][1])
 
-##########################################################################################################
 if __name__ == '__main__':
     app.run(debug=True)
