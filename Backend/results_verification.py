@@ -36,13 +36,13 @@ def win_calculator(bet_type, bet_amount, bet_odds):
       
       if bet_type == "moneyline":
             if bet_odds[0] == "+":
-                  total_win = bet_amount * (1 + (int(bet_odds[1:])/100))
+                  total_win = (bet_amount * (1 + (int(bet_odds[1:])/100))) + bet_amount
             else:
-                  total_win = bet_amount * (1 + (100/int(bet_odds)))            
+                  total_win = (bet_amount * (1 + (100/int(bet_odds)))) + bet_amount         
       else:
-            total_win = bet_amount * (1 + (100/-120))
+            total_win = (bet_amount * (1 + (100/-120))) + bet_amount
       
-      return total_win
+      return round(total_win, 2)
             
 
 
@@ -313,6 +313,6 @@ dummy_data = {
     ],
     "date": "2025-04-05T14:00:00"
 }
-verify_results(dummy_data['user_data'], dummy_data['game_database'], dummy_data['results'], dummy_data['date'])
+print(verify_results(dummy_data['user_data'], dummy_data['game_database'], dummy_data['results'], dummy_data['date']))
 
 """

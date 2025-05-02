@@ -20,9 +20,38 @@ class DynamoTable:
         self.dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.table = self.dynamodb.Table(self.table_name)
         
-    def updateBetStatus(self, user_id, bet):
+    from decimal import Decimal
+
+    def convert_floats_to_decimal(self, obj):
+        if isinstance(obj, list):
+            return [self.convert_floats_to_decimal(i) for i in obj]
+        elif isinstance(obj, dict):
+            return {k: self.convert_floats_to_decimal(v) for k, v in obj.items()}
+        elif isinstance(obj, float):
+            return Decimal(str(obj))  # Use str to avoid floating point issues
+        else:
+            return obj
+
+
+    def updateBetStatus(self, user_id, bet, user_balance):
         self.removeBetFromTable(bet, user_id)
         self.addBetToCompletedTable(bet, user_id)
+
+        # Ensure win_amount is a Decimal before adding
+        win_amount = bet['verified_results'].get('win_amount', 0)
+        if isinstance(win_amount, float):
+            win_amount = Decimal(str(win_amount))
+        elif isinstance(win_amount, int):
+            win_amount = Decimal(win_amount)
+
+        # Ensure user_balance is a Decimal too
+        if isinstance(user_balance, float):
+            user_balance = Decimal(str(user_balance))
+        elif isinstance(user_balance, int):
+            user_balance = Decimal(user_balance)
+
+        self.addBalanceToTable(user_balance, user_id, win_amount)
+
         
     def removeBetFromTable(self, bet_to_remove, user_id):
         try:
@@ -52,23 +81,26 @@ class DynamoTable:
         
     def addBetToCompletedTable(self, bet, user_id):
         try:
+            bet = self.convert_floats_to_decimal(bet)  # 🔥 Fix is here
+
             self.table.update_item(
                 Key={'user_id': user_id},
                 UpdateExpression="SET previous_bets = list_append(if_not_exists(previous_bets, :empty_list), :new_bet)",
                 ExpressionAttributeValues={
-                    ':new_bet': [bet],  # wrap single bet in a list
+                    ':new_bet': [bet],
                     ':empty_list': []
                 },
                 ReturnValues="UPDATED_NEW"
             )
         except ClientError as err:
             logger.error(
-                "Couldn't update bet for player %s in table %s. Here's why: %s: %s",
+                "Couldn't add bet to completed for player %s in table %s. Here's why: %s: %s",
                 self.table.name,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
             raise
+
 
     
     def addBetToTable(self, bet_list, user_id):
