@@ -3,7 +3,6 @@ from flask_restful import Resource, Api
 import requests
 import json
 from functools import wraps
-import datetime
 import sys
 import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -13,6 +12,8 @@ from flask import get_flashed_messages
 from datetime import datetime
 from Backend.results_verification import verify_results
 
+from datetime import datetime, timezone
+from webscraping import WebScraper
 
 DT = DynamoTable("DUBUsers")
 
@@ -136,7 +137,11 @@ def home():
         return redirect(url_for("login"))
     
     user_data = session["user"]
-    return render_template("home.html", user=user_data)
+    ws = WebScraper()
+    game_data = ws.upcoming_schedule()
+    game_dict = json.loads(game_data)
+    
+    return render_template("home.html", user=user_data, data=game_dict)
 
 #Route and function that is used to update and view the balance of a users account
 @app.route("/balance")
@@ -231,5 +236,33 @@ def refresh_status():
         
     return None
 
+##########################################################################################################
+
+#API and Webscraping
+"""
+The home screen should use: upcoming_schedule()
+To calculate daily betting: game_today() gives list of games today then give list to betting() to have the
+same list returned with betting information for each game. The time period could be adjusted. 
+"""
+@app.route('/official-bets')
+def officialBets():
+
+    #Pull a week worth of data, add the values to a list of dicitionaries
+    game_data = [{'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'Indiana State', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}, {'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'ye state', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}, {'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'Kendrick State', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}]
+    
+    return render_template("official_bets.html", data = game_data)
+
+@app.route('/my-bets')
+def myBets():
+    
+    if "user" in session:
+        username = session["user"]
+    
+    user_data = DT.getItemFromTable(users[username]["user_id"])
+    
+    #the database just gave back filler data
+    return render_template("My_Bets.html", data = user_data["current_bets"][1])
+
+##########################################################################################################
 if __name__ == '__main__':
     app.run(debug=True)
