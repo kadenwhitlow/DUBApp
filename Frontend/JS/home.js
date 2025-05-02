@@ -118,18 +118,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Event listener for bet buttons
-    betButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            const betType = this.textContent;
-            const player = this.closest(".bet").querySelector("p").textContent;
-            const betDetails = this.closest(".bet").querySelector(".bet-info").querySelectorAll("p")[1].textContent;
-            const bet_details_split = betDetails.split(" ");
-
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("bet-button")) {
+            const betType = event.target.textContent;
+            const betCard = event.target.closest(".bet-card");
+            const player = betCard.querySelector("div > div").textContent.trim(); // Extract player info
+            const betDetails = betType.split(" "); // Split bet details (e.g., "Spread 5.5")
+    
             // Store the selected bet temporarily
-            selectedBet = { player, type: betType, typeOfBet: bet_details_split[1], betValue: null };
-
+            selectedBet = { player, type: betType, typeOfBet: betDetails[1], betValue: null };
+    
             modal.style.display = "block"; // Show modal
-        });
+        }
     });
 
     // Close modal
