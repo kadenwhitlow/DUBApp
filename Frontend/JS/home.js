@@ -64,6 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const betButtons = document.querySelectorAll(".bet button");
     const cart = [];
     const betSizeInput = document.getElementById("bet-size"); // Get the input for bet size
+    let selectedBet = null; // Temporary storage for the selected bet
 
     // Create modal elements
     const modal = document.createElement("div");
@@ -78,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <input type="number" id="bet-size" placeholder="Enter amount" />
             </div>
             <button id="clear-bets">Clear Bets</button>
-            <button onclick="placeBet()" id="place-bets">Place Bets</button>
+            <button id="place-bets">Place Bets</button>
             <button onclick="placeParlay()" id="place-parlay">Place Parlay</button>
         </div>
     `;
@@ -124,9 +125,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const betDetails = this.closest(".bet").querySelector(".bet-info").querySelectorAll("p")[1].textContent;
             const bet_details_split = betDetails.split(" ");
 
-            // Add to cart
-            cart.push({ player, type: betType, typeOfBet: bet_details_split[1], betValue: bet_details_split[0] });
-            updateCart();
+            // Store the selected bet temporarily
+            selectedBet = { player, type: betType, typeOfBet: bet_details_split[1], betValue: null };
+
             modal.style.display = "block"; // Show modal
         });
     });
@@ -152,15 +153,20 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Handle placing the bet (e.g., sending the bets to the server, updating balance, etc.)
-        console.log("Placing bets with size: " + betSize);
+        if (selectedBet) {
+            // Add the selected bet to the cart with the entered bet size
+            selectedBet.betValue = betSize; // Update the bet value with the entered amount
+            cart.push(selectedBet);
+            updateCart();
 
-        // Clear the cart after placing bets
-        cart.length = 0;
-        updateCart();
+            // Clear the temporary selected bet
+            selectedBet = null;
 
-        // Optionally, close the modal after placing bets
-        modal.style.display = "none";
+            // Optionally, close the modal after placing bets
+            modal.style.display = "none";
+        } else {
+            alert("No bet selected.");
+        }
     });
 
     // Place parlay bet
@@ -202,68 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // -----------------------------------------------------------------------------------------------------
 
-document.addEventListener("DOMContentLoaded", function () {
-    const betContainer = document.querySelector(".content"); // Parent container for bet cards
-    const cart = [];
-    const modal = document.getElementById("bet-modal");
-    const betList = document.getElementById("bet-list");
-
-    function updateCart() {
-        betList.innerHTML = "";
-        cart.forEach((bet, index) => {
-            const li = document.createElement("li");
-            li.textContent = `${bet.betValue} - ${bet.typeOfBet} - ${bet.player} - ${bet.type}`;
-
-            // Create remove button
-            const removeButton = document.createElement("button");
-            removeButton.textContent = "Remove";
-            removeButton.classList.add("remove-bet");
-            removeButton.dataset.index = index; // Store index for removal
-
-            li.appendChild(removeButton);
-            betList.appendChild(li);
-        });
-
-        // Attach event listeners to remove buttons
-        document.querySelectorAll(".remove-bet").forEach(button => {
-            button.addEventListener("click", function () {
-                const index = this.dataset.index;
-                cart.splice(index, 1); // Remove bet at index
-                updateCart(); // Update cart UI
-            });
-        });
-    }
-
-    // Event delegation for dynamically added buttons
-    betContainer.addEventListener("click", function (event) {
-        if (event.target.tagName === "BUTTON" && event.target.classList.contains("bet-button")) {
-            const betType = event.target.textContent;
-            const player = event.target.closest(".bet-card").querySelector("div > div").textContent;
-            const betDetails = event.target.textContent.split(" ");
-
-            // Add to cart
-            cart.push({ player, type: betType, typeOfBet: betDetails[0], betValue: betDetails[1] });
-            updateCart();
-            modal.style.display = "block"; // Show modal
-        }
-    });
-
-    // Close modal
-    const closeModal = modal.querySelector(".close");
-    closeModal.addEventListener("click", function () {
-        modal.style.display = "none";
-    });
-
-    // Clear bets
-    const clearBets = modal.querySelector("#clear-bets");
-    clearBets.addEventListener("click", function () {
-        cart.length = 0;
-        updateCart();
-    });
-});
-
-// -----------------------------------------------------------------------------------------------------
-
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
 function toggleMenu() {
@@ -284,7 +228,6 @@ window.onclick = function(event) {
     }
 }
 
-
 // -----------------------------------------------------------------------------------------------------
 
 // Update the balance values dynamically with our AWS database call
@@ -301,22 +244,14 @@ function updateBalance() {
 //setInterval(updateBalance, 120000);  // Refresh balance every 5 seconds
 updateBalance();  // Call once immediately on page load
 
-
-
-
-
-
 //--------------------------------------------------------------------------------------------------------
 
 // Update and add cards to Official bets page
-
 
 document.addEventListener("DOMContentLoaded", () => {
     const betContainer = document.getElementById("bet-container");
     const popularBetsContainer = document.getElementById("popular-bets-container");
 
-
-    
     async function fetchBets() {
         try {
             const response = await fetch("database"); 
@@ -402,6 +337,4 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch bets initially and update every 30 seconds
     fetchBets();
     setInterval(fetchBets, 30000); // Update every 30 seconds
-
-
 });
