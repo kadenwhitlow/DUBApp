@@ -4,7 +4,7 @@ import time
 from threading import Thread
 from datetime import datetime
 import schedule
-from DynamoDBClass import DynamoTable
+from DUBDatabaseFiles.DynamoDBClass import DynamoTable
 
 class GeneratePoints:
     def __init__(self):

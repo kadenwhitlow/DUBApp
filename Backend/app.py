@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from webscraping import WebScraper
 
 DT = DynamoTable("DUBUsers")
-point_dist = GeneratePoints()
+#point_dist = GeneratePoints()
 
 
 app = Flask(__name__, template_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend/HTML', static_folder='/Users/kadenwhitlow/Downloads/DUBApp/Frontend')
@@ -148,9 +148,9 @@ def home():
     game_data = ws.upcoming_schedule()
     game_dict = json.loads(game_data)
     
-    top_bets_obj = TopBets(DT)
-    popular_bets = top_bets_obj.get_top_bets()
-    return render_template("home.html", user=user_data, data=game_dict, popular_bets=popular_bets)
+    #top_bets_obj = TopBets(DT)
+    #popular_bets = top_bets_obj.get_top_bets()
+    return render_template("home.html", user=user_data, data=game_dict, popular_bets=None)
 
 #Route and function that is used to update and view the balance of a users account
 @app.route("/balance")
@@ -211,10 +211,18 @@ def process_bet(bet_value, bet_list):
     
     return None
 
+def games_dict(GAME_DATABASE_RESPONSE, date):
+    WS = WebScraper()
+    final_dict = {}
+    for i in GAME_DATABASE_RESPONSE[date]:
+        final_dict = WS.update_score(i)
+    return final_dict
+
 def refresh_status():
     # Call the API to get the latest scores and results
+    WS = WebScraper()
     GAME_DATABASE_RESPONSE = None #requests.get("NONE").json()
-    GAME_RESULTS_RESPONSE = None #requests.get("NONE").json()
+    GAME_RESULTS_RESPONSE = games_dict(GAME_DATABASE_RESPONSE)
     
     
     # Check if a game is finished and update the status of the bet in the database
@@ -270,7 +278,7 @@ def myBets():
     user_data = DT.getItemFromTable(users[username]["user_id"])
     
     #the database just gave back filler data
-    return render_template("My_Bets.html", data = user_data["current_bets"][1])
+    return render_template("My_Bets.html", data = user_data["current_bets"][0])
 
 if __name__ == '__main__':
     app.run(debug=True)
