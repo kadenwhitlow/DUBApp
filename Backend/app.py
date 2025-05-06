@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from webscraping import WebScraper
 
 DT = DynamoTable("DUBUsers")
+DS = DynamoTable("DUBStorage")
 #point_dist = GeneratePoints()
 
 
@@ -144,9 +145,7 @@ def home():
         return redirect(url_for("login"))
     
     user_data = session["user"]
-    ws = WebScraper()
-    game_data = ws.upcoming_schedule()
-    game_dict = json.loads(game_data)
+    game_dict = DS.getItemFromTable("games_storage")
     
     #top_bets_obj = TopBets(DT)
     #popular_bets = top_bets_obj.get_top_bets()
