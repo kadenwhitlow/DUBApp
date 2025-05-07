@@ -148,9 +148,9 @@ def home():
     game_data = ws.upcoming_schedule()
     game_dict = json.loads(game_data)
     
-    top_bets_obj = TopBets(DT)
-    popular_bets = top_bets_obj.get_top_bets()
-    return render_template("home.html", user=user_data, data=game_dict, popular_bets=popular_bets)
+    #top_bets_obj = TopBets(DT)
+    #popular_bets = top_bets_obj.get_top_bets()
+    return render_template("home.html", user=user_data, data=game_dict, popular_bets=None)#popular_bets)
 
 #Route and function that is used to update and view the balance of a users account
 @app.route("/balance")

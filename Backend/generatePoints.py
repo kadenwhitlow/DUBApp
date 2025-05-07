@@ -4,18 +4,24 @@ import time
 from threading import Thread
 from datetime import datetime
 import schedule
-from DynamoDBClass import DynamoTable
+from DUBDatabaseFiles.DynamoDBClass import DynamoTable
 
 class GeneratePoints:
     def __init__(self):
         self.code_table = DynamoTable("DUBStorage")
         self.user_table = DynamoTable("DUBUsers")
-
+    
+    def runCodes(self):
         thread = Thread(target=self._schedule_thread, daemon=True)
         thread.start()
         self.refresh_codes()  
 
-        schedule.every().sunday.at("00:00").do(self.refresh_codes) 
+        schedule.every().sunday.at("00:00").do(self.refresh_codes)
+        
+    def _schedule_thread(self):
+        while True:
+            schedule.run_pending()
+            time.sleep(60)
 
     def generate_code(self, point_value):
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
@@ -33,7 +39,7 @@ class GeneratePoints:
         return code
 
     def refresh_codes(self):
-        self.code_table.clearTable()
+        #self.code_table.clearTable()
 
         point_values = [50, 40, 30, 20, 10]
 
@@ -65,8 +71,4 @@ class GeneratePoints:
             "new_balance": new_balance
         }, 200
 
-    def _schedule_thread(self):
-        while True:
-            schedule.run_pending()
-            time.sleep(60)
             

@@ -2,6 +2,7 @@ import boto3
 import logging
 from botocore.exceptions import ClientError
 from decimal import Decimal
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR)
@@ -174,54 +175,23 @@ class DynamoTable:
             )
             raise
     
-    def addCodesToTable(self, codes, user_id):
-        try:
-            update_expression = "SET "
-            expression_attribute_names = {}
-            expression_attribute_values = {}
-
-            for i, code in enumerate(codes):
-                code_key = f"#c{i}"
-                value_key = f":v{i}"
-
-                update_expression += f"codeMap.{code_key} = {value_key}, "
-                expression_attribute_names[code_key] = code
-                expression_attribute_values[value_key] = 0
-
-            update_expression = update_expression.rstrip(", ")
-
-            self.table.update_item(
-                Key={'user_id': user_id},
-                UpdateExpression=update_expression,
-                ExpressionAttributeNames=expression_attribute_names,
-                ExpressionAttributeValues=expression_attribute_values,
-                ReturnValues="UPDATED_NEW"
-            )
-        except ClientError as err:
-            logger.error(
-                "Couldn't add codes for user %s in table %s. Here's why: %s: %s",
-                user_id,
-                self.table.name,
-                err.response["Error"]["Code"],
-                err.response["Error"]["Message"],
-            )
-            raise
-
         
         
         
-    def addCodesToTable(self, code, user_id):
+    def addCodesToTable(self, code_data, user_id):
+        code_str = code_data['code']  # Extract the actual code string
         try:
             self.table.update_item(
-                Key={'feature_id': 'points_codes'},  # <-- updated
-                UpdateExpression=f"SET codes.#code = :code_val",
-                ExpressionAttributeNames={"#code": code},
-                ExpressionAttributeValues={":code_val": {"points": 50, "used": False}},  # example value
+                Key={'feature_id': user_id},
+                UpdateExpression="SET codes.#c = :code_val",
+                ExpressionAttributeNames={"#c": code_str},
+                ExpressionAttributeValues={":code_val": code_data},
             )
-
-            print(f"Successfully added code: {code}")
+            print(f"Successfully added code: {code_str}")
         except ClientError as e:
-            print(f"Couldn't add code {code}: {e}")
+            print(f"Couldn't add code {code_str}: {e}")
+
+
 
     def get_code_details(self, code):
         # Read the item with feature_id = "points_codes"
