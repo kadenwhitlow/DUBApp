@@ -58,13 +58,12 @@ function placeBet() {
 }
 
 // -----------------------------------------------------------------------------------------------------
-// This function adds functionality to the bet buttons on the official bets page
 
 document.addEventListener("DOMContentLoaded", function () {
     // Get all bet buttons
     const betButtons = document.querySelectorAll(".bet button");
     const cart = [];
-    let selectedBet = null; // Temporary storage for the selected bet
+    const betSizeInput = document.getElementById("bet-size"); // Get the input for bet size
 
     // Create modal elements
     const modal = document.createElement("div");
@@ -79,13 +78,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 <input type="number" id="bet-size" placeholder="Enter amount" />
             </div>
             <button id="clear-bets">Clear Bets</button>
-            <button id="place-bets">Place Bets</button>
+            <button onclick="placeBet()" id="place-bets">Place Bets</button>
             <button onclick="placeParlay()" id="place-parlay">Place Parlay</button>
         </div>
     `;
     document.body.appendChild(modal);
 
-    const betSizeInput = document.getElementById("bet-size"); // Get the input for bet size
     const betList = document.getElementById("bet-list");
     const closeModal = modal.querySelector(".close");
     const clearBets = modal.querySelector("#clear-bets");
@@ -119,18 +117,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Event listener for bet buttons
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("bet-button")) {
-            const betType = event.target.textContent;
-            const betCard = event.target.closest(".bet-card");
-            const player = betCard.querySelector("div > div").textContent.trim(); // Extract player info
-            const betDetails = betType.split(" "); // Split bet details (e.g., "Spread 5.5")
-    
-            // Store the selected bet temporarily
-            selectedBet = { player, type: betType, typeOfBet: betDetails[1], betValue: null };
-    
+    betButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const betType = this.textContent;
+            const player = this.closest(".bet").querySelector("p").textContent;
+            const betDetails = this.closest(".bet").querySelector(".bet-info").querySelectorAll("p")[1].textContent;
+            const bet_details_split = betDetails.split(" ");
+
+            // Add to cart
+            cart.push({ player, type: betType, typeOfBet: bet_details_split[1], betValue: bet_details_split[0] });
+            updateCart();
             modal.style.display = "block"; // Show modal
-        }
+        });
     });
 
     // Close modal
@@ -154,20 +152,15 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (selectedBet) {
-            // Add the selected bet to the cart with the entered bet size
-            selectedBet.betValue = betSize; // Update the bet value with the entered amount
-            cart.push(selectedBet);
-            updateCart();
+        // Handle placing the bet (e.g., sending the bets to the server, updating balance, etc.)
+        console.log("Placing bets with size: " + betSize);
 
-            // Clear the temporary selected bet
-           // selectedBet = null;
+        // Clear the cart after placing bets
+        cart.length = 0;
+        updateCart();
 
-            // Optionally, close the modal after placing bets
-            modal.style.display = "none";
-        } else {
-            alert("No bet selected.");
-        }
+        // Optionally, close the modal after placing bets
+        modal.style.display = "none";
     });
 
     // Place parlay bet
@@ -209,6 +202,68 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // -----------------------------------------------------------------------------------------------------
 
+document.addEventListener("DOMContentLoaded", function () {
+    const betContainer = document.querySelector(".content"); // Parent container for bet cards
+    const cart = [];
+    const modal = document.getElementById("bet-modal");
+    const betList = document.getElementById("bet-list");
+
+    function updateCart() {
+        betList.innerHTML = "";
+        cart.forEach((bet, index) => {
+            const li = document.createElement("li");
+            li.textContent = `${bet.betValue} - ${bet.typeOfBet} - ${bet.player} - ${bet.type}`;
+
+            // Create remove button
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.classList.add("remove-bet");
+            removeButton.dataset.index = index; // Store index for removal
+
+            li.appendChild(removeButton);
+            betList.appendChild(li);
+        });
+
+        // Attach event listeners to remove buttons
+        document.querySelectorAll(".remove-bet").forEach(button => {
+            button.addEventListener("click", function () {
+                const index = this.dataset.index;
+                cart.splice(index, 1); // Remove bet at index
+                updateCart(); // Update cart UI
+            });
+        });
+    }
+
+    // Event delegation for dynamically added buttons
+    betContainer.addEventListener("click", function (event) {
+        if (event.target.tagName === "BUTTON" && event.target.classList.contains("bet-button")) {
+            const betType = event.target.textContent;
+            const player = event.target.closest(".bet-card").querySelector("div > div").textContent;
+            const betDetails = event.target.textContent.split(" ");
+
+            // Add to cart
+            cart.push({ player, type: betType, typeOfBet: betDetails[0], betValue: betDetails[1] });
+            updateCart();
+            modal.style.display = "block"; // Show modal
+        }
+    });
+
+    // Close modal
+    const closeModal = modal.querySelector(".close");
+    closeModal.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    // Clear bets
+    const clearBets = modal.querySelector("#clear-bets");
+    clearBets.addEventListener("click", function () {
+        cart.length = 0;
+        updateCart();
+    });
+});
+
+// -----------------------------------------------------------------------------------------------------
+
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
 function toggleMenu() {
@@ -245,6 +300,11 @@ function updateBalance() {
 
 //setInterval(updateBalance, 120000);  // Refresh balance every 5 seconds
 updateBalance();  // Call once immediately on page load
+
+
+
+
+
 
 //--------------------------------------------------------------------------------------------------------
 
