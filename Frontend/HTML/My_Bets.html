@@ -23,6 +23,7 @@
                 <a href="/official-bets">Official Bets</a>
                 <a href="/Frontend/HTML/getpoints.html">Earn Points</a>
               </div>
+            <button onclick="logOut()" class="logout">Logout</button>
         </div>
         <div class="logo"><img src="/Frontend/Images/logoDUB.png" alt="Logo" style="width: 120px;"></div>
         <div class="user-balance" style="font-size: 18px; font-weight: bold; color: #FFC107;">User Balance</div>
@@ -51,7 +52,6 @@
                 <p>Team: {{ i["player"]}} | Amount: {{ i["bet_value"]}}</p>
                 <p> #{{ i["bet_status"]}} </p>
             </div>
-            <button style="background-color: #FFC107; color: black; border: none; padding: 8px 12px; margin: 5px; cursor: pointer; border-radius: 5px; font-size: 14px;">More Info</button>
         </div>
 
         {% endfor  %}
