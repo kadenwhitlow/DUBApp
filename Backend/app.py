@@ -145,7 +145,7 @@ def home():
         return redirect(url_for("login"))
     
     user_data = session["user"]
-    game_dict = DS.getItemFromTable("games_storage")
+    game_dict = DS.getItemFromTableStorage("games_storage")
     
     #top_bets_obj = TopBets(DT)
     #popular_bets = top_bets_obj.get_top_bets()
@@ -264,8 +264,8 @@ same list returned with betting information for each game. The time period could
 def officialBets():
 
     #Pull a week worth of data, add the values to a list of dicitionaries
-    game_data = [{'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'Indiana State', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}, {'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'ye state', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}, {'date': 'March 29, 2025 at 11:00 AM', 'opponent': 'Kendrick State', 'sport': 'Softball', 'id': '121', 'betting': {'ml': {'home_ml': '+194', 'away_ml': '-307'}, 'spread': 4, 'overUnder': 8}}]
-    
+    game_data = DS.getItemFromTableStorage("games_storage")
+	
     return render_template("official_bets.html", data = game_data)
 
 @app.route('/my-bets')
