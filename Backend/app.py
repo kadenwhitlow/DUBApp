@@ -4,6 +4,7 @@ import requests
 import json
 from functools import wraps
 import datetime
+from decimal import Decimal
 import sys
 import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -144,11 +145,13 @@ def home():
         flash("You need to log in first!", "error")
         return redirect(url_for("login"))
     
-    user_data = session["user"]
-    game_dict = DS.getItemFromTable("games_storage")
+    username = session["user"]
+    user_data = DT.getItemFromTable(users[username]["user_id"])
+    game_dict = DS.getItemFromTableStorage("games_storage")
     
     #top_bets_obj = TopBets(DT)
     #popular_bets = top_bets_obj.get_top_bets()
+    print(game_dict)
     return render_template("home.html", user=user_data, data=game_dict, popular_bets=None)
 
 #Route and function that is used to update and view the balance of a users account
@@ -161,22 +164,22 @@ def balance():
     
     return jsonify({"balance": "N/A"})
 
+
+
+
 @app.route('/place_bets', methods=['POST'])
 def place_bets():
     print("Request JSON:", request.json)
-    user_balance = users[session["user"]]["account_balance"]
+    user_balance = Decimal(str(users[session["user"]]["account_balance"]))
     print(user_balance)
 
     bet_data = request.json.get('bet-list')
-
-    bet_size = float(request.json.get('bet-size'))
-    
+    bet_size = Decimal(str(request.json.get('bet-size')))
     bet_parlay = request.json.get('parlay')
-    
+
     if bet_size <= 0 or bet_size > user_balance:
         return jsonify({"error": "Invalid bet size. Check your balance."}), 400
-    
-    # makes sure bet_data is split properly
+
     bets_split = []
     for i in bet_data:
         bet_details = i.split("-")
@@ -187,7 +190,7 @@ def place_bets():
         bet_type, bet_odds = bet_data[-1].rsplit(" ", 1)
         bet_dict = {
             'bet_value': bet_value,
-            'type_of_bet': bet_type,
+            'type_of_bet': bet_prop.lower(),
             'bet_prop': bet_prop,
             'bet_odds': bet_odds,
             'bet_amount': bet_size,
@@ -198,17 +201,19 @@ def place_bets():
 
     print("Placing bet....")
     print(f"PARLAY: {bets_split}")
-    process_bet(bet_value, bets_split)
+    process_bet(bet_size, bets_split)
 
-    return jsonify({"message": "Bets placed successfully.", "new_balance": user_balance})
+    return jsonify({"message": "Bets placed successfully.", "new_balance": float(user_balance)})
 
-def process_bet(bet_value, bet_list):
+
+def process_bet(bet_amount, bet_list):
     if "user" in session:
         username = session["user"]
-    DT.subtractBalanceFromTable(users[username]["account_balance"], users[username]["user_id"], bet_value)
+    DT.subtractBalanceFromTable(users[username]["account_balance"], users[username]["user_id"], bet_amount)
     DT.addBetToTable(bet_list, users[username]["user_id"])
     
     return None
+
 
 def games_dict(GAME_DATABASE_RESPONSE, date):
     WS = WebScraper()
@@ -276,8 +281,11 @@ def myBets():
     
     user_data = DT.getItemFromTable(users[username]["user_id"])
     
+    my_bets = []
+    for i in user_data["current_bets"]:
+        my_bets.append(i)
     #the database just gave back filler data
-    return render_template("My_Bets.html", data = user_data["current_bets"][0])
+    return render_template("My_Bets.html", data = my_bets)
 
 if __name__ == '__main__':
     app.run(debug=True)

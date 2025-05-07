@@ -268,4 +268,27 @@ class DynamoTable:
                     print(f"Table '{self.table_name}' not found.")
                 else:
                     print(f"An error occurred: {err.response['Error']['Message']}")
+                    
+    def getItemFromTableStorage(self, key_value):
+            key = {
+                "feature_id": key_value  # Corrected key format for DynamoDB
+            }
+
+
+            try:
+                # Use self.table.get_item instead of self.dynamodb.get_item
+                response = self.table.get_item(Key=key)
+                item = response.get("Item")
+
+                if item:
+                    print("Retrieved item:")
+                    return item
+                else:
+                    print("Item not found.")
+
+            except ClientError as err:
+                if err.response["Error"]["Code"] == "ResourceNotFoundException":
+                    print(f"Table '{self.table_name}' not found.")
+                else:
+                    print(f"An error occurred: {err.response['Error']['Message']}")
             

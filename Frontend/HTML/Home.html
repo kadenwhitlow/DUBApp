@@ -36,16 +36,18 @@
     <div class="content">
         <h2>LIVE/UPCOMING EVENTS</h2>
         <div class="events">
-            {% for i in data.keys() %}
-                {% for x in data[i].values() %}
-
-                <p><strong>{{ x["sport"] }} - {{ x["date"] }}</strong> <br> Drake vs {{ x["opponent"] }}</p>
-                
+            {% if data %}
+                {% for date, events in data['all_games'].items() %}
+                    {% for event_id, event in events.items() %}
+                        <p><strong>{{ event["sport"] }} - {{ event["date"] }}</strong> <br> Drake vs {{ event["opponent"] }}</p>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-            
+            {% else %}
+                <p>No events data available.</p>
+            {% endif %}
         </div>
     </div>
+
 
     <!-- Top Bets -->
     <div class="content" style="background-color: white; color: black; padding: 20px; border-radius: 10px; width: 80%; margin: 20px auto; max-width: 600px;">
