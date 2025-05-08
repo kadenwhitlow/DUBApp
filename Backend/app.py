@@ -267,11 +267,22 @@ same list returned with betting information for each game. The time period could
 """
 @app.route('/official-bets')
 def officialBets():
-
-    #Pull a week worth of data, add the values to a list of dicitionaries
-    game_data = DS.getItemFromTableStorage("games_storage")
 	
-    return render_template("official_bets.html", data = game_data)
+
+	#Pull a week worth of data, add the values to a list of dicitionaries
+	game_data = DS.getItemFromTableStorage("games_storage")
+	
+	for i in list(game_data.keys()):
+    
+	        for x in list(game_data[i].keys()):
+	            
+	            if game_data[i][x]["betting"]["spread"] == 0:
+	                del game_data[i][x]
+	
+	        if not game_data[i]:
+	            del game_data[i]
+	
+	return render_template("official_bets.html", data = game_data)
 
 @app.route('/my-bets')
 def myBets():
