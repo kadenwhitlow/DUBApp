@@ -151,7 +151,7 @@ def home():
     
     #top_bets_obj = TopBets(DT)
     #popular_bets = top_bets_obj.get_top_bets()
-    print(game_dict)
+    #print(game_dict)
     return render_template("home.html", user=user_data, data=game_dict, popular_bets=None)
 
 #Route and function that is used to update and view the balance of a users account
