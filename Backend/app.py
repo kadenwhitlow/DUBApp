@@ -148,6 +148,7 @@ def home():
     username = session["user"]
     user_data = DT.getItemFromTable(users[username]["user_id"])
     game_dict = DS.getItemFromTableStorage("games_storage")
+    game_dict['all_games'] = json.loads(game_dict['all_games'])
     
     #top_bets_obj = TopBets(DT)
     #popular_bets = top_bets_obj.get_top_bets()
@@ -270,19 +271,17 @@ def officialBets():
 	
 
 	#Pull a week worth of data, add the values to a list of dicitionaries
-	game_data = DS.getItemFromTableStorage("games_storage")
-	
-	for i in list(game_data.keys()):
+    game_data = DS.getItemFromTableStorage("games_storage")
     
-	        for x in list(game_data[i].keys()):
-	            
-	            if game_data[i][x]["betting"]["spread"] == 0:
-	                del game_data[i][x]
-	
-	        if not game_data[i]:
-	            del game_data[i]
-	
-	return render_template("official_bets.html", data = game_data)
+    for i in list(game_data.keys()):
+        for x in list(game_data[i].keys()):
+            if game_data[i][x]["betting"]["spread"] == 0:
+                del game_data[i][x]
+        
+        if not game_data[i]:
+            del game_data[i]
+    
+    return render_template("official_bets.html", data=game_data)
 
 @app.route('/my-bets')
 def myBets():
